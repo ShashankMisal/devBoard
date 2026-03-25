@@ -1,0 +1,23 @@
+# Dependencies should be restored from package manifests, not versioned from one machine.
+node_modules/
+
+# Local environment files contain machine-specific settings and secrets.
+.env*
+
+# Runtime logs are generated artifacts and create noisy diffs.
+logs/
+
+# Coverage output is test-generated and should not be tracked.
+coverage/
+
+# macOS Finder metadata has no project value and pollutes the working tree.
+.DS_Store
+
+# Future build or cache directories should stay out of version control as the project grows.
+dist/
+build/
+.cache/
+
+context.txt
+
+phase wise context.txt
