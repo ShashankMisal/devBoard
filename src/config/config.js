@@ -52,6 +52,29 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',')
 
 const parsedPort = Number(process.env.PORT);
 
+const convertDurationToMilliseconds = (durationValue) => {
+  const durationPattern = /^(\d+)(ms|s|m|h|d)$/;
+  const parsedDuration = String(durationValue).trim().match(durationPattern);
+
+  if (!parsedDuration) {
+    throw new Error(
+      'JWT expiry values must use a numeric value followed by ms, s, m, h, or d.'
+    );
+  }
+
+  const durationAmount = Number(parsedDuration[1]);
+  const durationUnit = parsedDuration[2];
+  const unitMap = {
+    ms: 1,
+    s: 1000,
+    m: 60 * 1000,
+    h: 60 * 60 * 1000,
+    d: 24 * 60 * 60 * 1000
+  };
+
+  return durationAmount * unitMap[durationUnit];
+};
+
 if (!Number.isInteger(parsedPort) || parsedPort <= 0) {
   throw new Error('PORT must be a positive integer.');
 }
@@ -73,7 +96,9 @@ const config = {
     accessSecret: process.env.JWT_ACCESS_SECRET,
     refreshSecret: process.env.JWT_REFRESH_SECRET,
     accessExpiry: process.env.JWT_ACCESS_EXPIRY,
-    refreshExpiry: process.env.JWT_REFRESH_EXPIRY
+    refreshExpiry: process.env.JWT_REFRESH_EXPIRY,
+    refreshCookieName: 'refreshToken',
+    refreshCookieMaxAgeMs: convertDurationToMilliseconds(process.env.JWT_REFRESH_EXPIRY)
   },
   redis: {
     url: process.env.REDIS_URL

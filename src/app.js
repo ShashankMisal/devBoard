@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -8,6 +9,8 @@ const ApiError = require('./utils/ApiError');
 const ApiResponse = require('./utils/ApiResponse');
 const asyncWrapper = require('./middlewares/asyncWrapper');
 const errorHandler = require('./middlewares/errorHandler');
+const authRoutes = require('./modules/auth/auth.routes');
+const userRoutes = require('./modules/users/user.routes');
 const { morganStream } = require('./utils/logger');
 
 const app = express();
@@ -29,6 +32,7 @@ app.use(
 );
 
 app.use(morgan('combined', { stream: morganStream }));
+app.use(cookieParser());
 
 app.use(
   express.json({
@@ -66,6 +70,8 @@ apiRouter.get(
   })
 );
 
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
 app.use('/api/v1', apiRouter);
 
 app.use((req, res, next) => {
