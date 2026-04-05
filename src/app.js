@@ -10,6 +10,8 @@ const ApiResponse = require('./utils/ApiResponse');
 const asyncWrapper = require('./middlewares/asyncWrapper');
 const errorHandler = require('./middlewares/errorHandler');
 const authRoutes = require('./modules/auth/auth.routes');
+const projectRoutes = require('./modules/projects/project.routes');
+const { projectTaskRouter, taskRouter } = require('./modules/tasks/task.routes');
 const userRoutes = require('./modules/users/user.routes');
 const { morganStream } = require('./utils/logger');
 
@@ -72,6 +74,9 @@ apiRouter.get(
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/projects/:projectId/tasks', projectTaskRouter);
+app.use('/api/v1/projects', projectRoutes);
+app.use('/api/v1/tasks', taskRouter);
 app.use('/api/v1', apiRouter);
 
 app.use((req, res, next) => {
