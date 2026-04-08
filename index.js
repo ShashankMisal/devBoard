@@ -1,6 +1,7 @@
 const app = require('./src/app');
 const config = require('./src/config/config');
 const { connectDB, closeDatabaseConnection } = require('./src/config/db');
+const { closeRedisConnection, connectRedis } = require('./src/config/redis');
 const { logger } = require('./src/utils/logger');
 
 let server;
@@ -10,6 +11,7 @@ const startServer = async () => {
   try {
     // Waiting for the database first avoids accepting traffic the API cannot actually serve correctly.
     await connectDB();
+    await connectRedis();
 
     server = app.listen(config.app.port, () => {
       logger.info(`Server is running on port ${config.app.port} in ${config.app.env} mode.`);
@@ -33,7 +35,7 @@ const shutdown = async (signal) => {
   logger.warn(`Received ${signal}. Starting graceful shutdown.`);
 
   try {
-    if (server) {
+    if (server && server.listening) {
       await new Promise((resolve, reject) => {
         server.close((error) => {
           if (error) {
@@ -46,6 +48,7 @@ const shutdown = async (signal) => {
     }
 
     await closeDatabaseConnection(signal);
+    await closeRedisConnection(signal);
 
     logger.info('Application shutdown completed successfully.');
     process.exit(0);

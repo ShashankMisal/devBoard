@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
+const config = require('../../config/config');
 const ApiError = require('../../utils/ApiError');
+const { deleteCache, deleteCacheByPattern, getCache, setCache } = require('../../utils/cache');
 const paginate = require('../../utils/pagination');
 const User = require('../users/user.model');
 const Project = require('./project.model');
@@ -75,8 +77,42 @@ const getAccessFilter = (userId) => ({
   $or: [{ owner: userId }, { members: userId }]
 });
 
+const buildProjectsListCacheKey = (userId, queryParams = {}) => {
+  return `projects:${userId}:page:${queryParams.page || 1}:limit:${queryParams.limit || 10}:status:${queryParams.status || 'all'}`;
+};
+
+const buildProjectDetailCacheKey = (projectId, userId) => {
+  return `project:${projectId}:user:${userId}`;
+};
+
+const invalidateProjectListCachesForUsers = async (userIds) => {
+  const uniqueUserIds = [...new Set(userIds.map((userId) => userId.toString()))];
+
+  await Promise.all(
+    uniqueUserIds.map((userId) => deleteCacheByPattern(`projects:${userId}:*`))
+  );
+};
+
+const invalidateProjectCaches = async (project) => {
+  const ownerId = project.owner._id ? project.owner._id.toString() : project.owner.toString();
+  const memberIds = project.members.map((member) => (member._id ? member._id.toString() : member.toString()));
+  const relatedUserIds = [ownerId, ...memberIds];
+
+  await Promise.all([
+    ...relatedUserIds.map((userId) => deleteCache(buildProjectDetailCacheKey(project._id, userId))),
+    invalidateProjectListCachesForUsers(relatedUserIds)
+  ]);
+};
+
 const getAccessibleProjectById = async (projectId, userId) => {
   validateObjectId(projectId, 'project id');
+
+  const cacheKey = buildProjectDetailCacheKey(projectId, userId);
+  const cachedProject = await getCache(cacheKey);
+
+  if (cachedProject) {
+    return cachedProject;
+  }
 
   const project = await Project.findOne({
     _id: projectId,
@@ -86,6 +122,8 @@ const getAccessibleProjectById = async (projectId, userId) => {
   if (!project) {
     throw ApiError.forbidden('You do not have access to this project.');
   }
+
+  await setCache(cacheKey, project.toJSON(), config.redis.cacheTtlSeconds);
 
   return project;
 };
@@ -122,10 +160,20 @@ const createProject = async (userId, data) => {
     owner: userId
   });
 
-  return Project.findById(project._id).populate(PROJECT_POPULATE);
+  const hydratedProject = await Project.findById(project._id).populate(PROJECT_POPULATE);
+  await invalidateProjectListCachesForUsers([userId]);
+
+  return hydratedProject;
 };
 
 const getAllProjects = async (userId, queryParams) => {
+  const cacheKey = buildProjectsListCacheKey(userId, queryParams);
+  const cachedProjects = await getCache(cacheKey);
+
+  if (cachedProjects) {
+    return cachedProjects;
+  }
+
   const filter = getAccessFilter(userId);
 
   if (queryParams.status) {
@@ -140,7 +188,10 @@ const getAllProjects = async (userId, queryParams) => {
     .populate(PROJECT_POPULATE)
     .sort({ updatedAt: -1 });
 
-  return paginate(query, queryParams.page, queryParams.limit);
+  const paginatedProjects = await paginate(query, queryParams.page, queryParams.limit);
+  await setCache(cacheKey, paginatedProjects, config.redis.cacheTtlSeconds);
+
+  return paginatedProjects;
 };
 
 const getProjectById = async (projectId, userId) => {
@@ -154,7 +205,10 @@ const updateProject = async (projectId, userId, data) => {
   Object.assign(project, updates);
   await project.save();
 
-  return Project.findById(project._id).populate(PROJECT_POPULATE);
+  const hydratedProject = await Project.findById(project._id).populate(PROJECT_POPULATE);
+  await invalidateProjectCaches(hydratedProject);
+
+  return hydratedProject;
 };
 
 const deleteProject = async (projectId, userId) => {
@@ -162,6 +216,7 @@ const deleteProject = async (projectId, userId) => {
 
   await Task.deleteMany({ project: project._id });
   await project.deleteOne();
+  await invalidateProjectCaches(project);
 
   return project;
 };
@@ -200,7 +255,10 @@ const addMember = async (projectId, ownerId, memberEmail) => {
   project.members.push(member._id);
   await project.save();
 
-  return Project.findById(project._id).populate(PROJECT_POPULATE);
+  const hydratedProject = await Project.findById(project._id).populate(PROJECT_POPULATE);
+  await invalidateProjectCaches(hydratedProject);
+
+  return hydratedProject;
 };
 
 module.exports = {

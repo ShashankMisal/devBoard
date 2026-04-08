@@ -70,6 +70,7 @@ const errorHandler = (error, req, res, _next) => {
   const isProduction = process.env.NODE_ENV === 'production';
 
   logger.error('Unhandled error reached the global error handler.', {
+    requestId: req.id,
     method: req.method,
     path: req.originalUrl,
     statusCode: normalizedError.statusCode,

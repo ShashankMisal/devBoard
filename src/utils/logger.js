@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const winston = require('winston');
+const winston = require('winston');,
 
 const config = require('../config/config');
 
@@ -58,6 +58,23 @@ const logger = winston.createLogger({
   transports
 });
 
+const buildRequestLogLine = (tokens, req, res, formatName) => {
+  const parts = [
+    `requestId=${tokens.id(req, res)}`,
+    `method=${tokens.method(req, res)}`,
+    `url=${tokens.url(req, res)}`,
+    `status=${tokens.status(req, res)}`,
+    `responseTime=${tokens['response-time'](req, res)}ms`
+  ];
+
+  if (formatName === 'combined') {
+    parts.push(`contentLength=${tokens.res(req, res, 'content-length') || 0}`);
+    parts.push(`userAgent="${tokens['user-agent'](req, res) || '-'}"`);
+  }
+
+  return parts.join(' ');
+};
+
 const morganStream = {
   // Routing Morgan through Winston keeps request logs in the same observability pipeline as application logs.
   write: (message) => {
@@ -67,5 +84,6 @@ const morganStream = {
 
 module.exports = {
   logger,
-  morganStream
+  morganStream,
+  buildRequestLogLine
 };

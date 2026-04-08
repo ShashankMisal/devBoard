@@ -87,7 +87,8 @@ const config = {
   app: {
     name: 'DevBoard API',
     env: process.env.NODE_ENV,
-    port: parsedPort
+    port: parsedPort,
+    isProduction: process.env.NODE_ENV === 'production'
   },
   database: {
     uri: process.env.MONGODB_URI
@@ -101,13 +102,23 @@ const config = {
     refreshCookieMaxAgeMs: convertDurationToMilliseconds(process.env.JWT_REFRESH_EXPIRY)
   },
   redis: {
-    url: process.env.REDIS_URL
+    url: process.env.REDIS_URL,
+    cacheTtlSeconds: 60
   },
   cors: {
-    allowedOrigins
+    allowedOrigins,
+    credentials: true
+  },
+  rateLimit: {
+    windowMs: 15 * 60 * 1000,
+    generalMax: 100,
+    authMax: 5
   },
   logging: {
     level: process.env.LOG_LEVEL
+  },
+  security: {
+    requestIdHeader: 'X-Request-Id'
   }
 };
 
