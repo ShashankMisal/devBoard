@@ -19,5 +19,21 @@ module.exports = [
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-undef': 'error'
     }
+  },
+  {
+    files: ['tests/**/*.js'],
+    languageOptions: {
+      globals: {
+        jest: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeAll: 'readonly',
+        beforeEach: 'readonly',
+        afterAll: 'readonly',
+        afterEach: 'readonly',
+        setTimeout: 'readonly'
+      }
+    }
   }
 ];

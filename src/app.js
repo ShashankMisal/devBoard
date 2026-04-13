@@ -98,7 +98,7 @@ app.use(mongoSanitizeMiddleware);
 app.use(hpp());
 
 app.get(
-  '/health',
+  '/health',  
   asyncWrapper(async (req, res) => {
     const response = new ApiResponse(200, 'Service is healthy.', {
       service: config.app.name,

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const winston = require('winston');,
+const winston = require('winston');
 
 const config = require('../config/config');
 
