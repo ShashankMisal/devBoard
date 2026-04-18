@@ -17,7 +17,9 @@ module.exports = [
     },
     rules: {
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      'no-undef': 'error'
+      'no-undef': 'error',
+      'no-console': 'warn',
+      'consistent-return': 'error'
     }
   },
   {

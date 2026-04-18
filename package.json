@@ -7,9 +7,12 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "jest --runInBand",
-    "test:coverage": "jest --runInBand --coverage",
-    "lint": "eslint ."
+    "test": "jest --runInBand --forceExit",
+    "test:coverage": "jest --runInBand --coverage --forceExit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "docker:dev": "docker-compose up --build",
+    "docker:down": "docker-compose down"
   },
   "keywords": [
     "nodejs",

@@ -13,7 +13,11 @@ jest.setTimeout(60000);
 
 beforeAll(async () => {
   // Using an in-memory database keeps tests isolated from the developer's local MongoDB instance.
-  mongoServer = await MongoMemoryServer.create();
+  mongoServer = await MongoMemoryServer.create({
+    instance: {
+      ip: '127.0.0.1'
+    }
+  });
   await mongoose.connect(mongoServer.getUri(), {
     dbName: 'devboard-test'
   });

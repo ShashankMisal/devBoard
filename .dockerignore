@@ -1,0 +1,13 @@
+# Keeping the Docker build context small makes rebuilds faster and avoids copying local-only artifacts into the image.
+node_modules
+npm-debug.log
+coverage
+logs
+.git
+.gitignore
+.DS_Store
+.env*
+tests
+README.md
+context.txt
+phase wise context.txt
