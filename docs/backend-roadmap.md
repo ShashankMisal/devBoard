@@ -58,7 +58,7 @@ devBoard/
 └── docs/
 ```
 
-Until that restructure happens, the backend currently lives in the repo root.
+The backend now lives in `backend/` as part of the monorepo layout.
 
 ## Backend Architecture Rules
 
@@ -290,4 +290,4 @@ Known gap:
 
 - The implemented backend in the repo is the actual source of truth when it differs from earlier planning text.
 - `AGENTS.md` remains the short repo-operating guide, while this roadmap holds backend detail.
-- The backend will eventually move into `backend/` as part of the monorepo structure, but that restructure is not performed by this document.
+- The backend lives in `backend/` as part of the monorepo structure.

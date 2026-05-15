@@ -118,6 +118,12 @@ Deliverables:
 - backend still runnable
 - frontend can be scaffolded against a stable API base URL strategy
 
+Current Phase 0 status:
+
+- backend code and runtime configuration live under `backend/`
+- `frontend/` exists only as a placeholder for the Phase 1 Angular scaffold
+- the frozen integration contract is documented in [`backend-api-contract.md`](backend-api-contract.md)
+
 ## Phase 1 — Frontend Foundation
 
 - Create Angular 19 app in `frontend/`.

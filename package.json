@@ -1,53 +1,20 @@
 {
-  "name": "devboard-api",
+  "name": "devboard",
   "version": "1.0.0",
-  "description": "Production-grade REST API foundation for the DevBoard project.",
-  "main": "index.js",
-  "type": "commonjs",
+  "private": true,
+  "description": "DevBoard monorepo root for backend and future frontend applications.",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "jest --runInBand --forceExit",
-    "test:coverage": "jest --runInBand --coverage --forceExit",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "docker:dev": "docker-compose up --build",
-    "docker:down": "docker-compose down"
-  },
-  "keywords": [
-    "nodejs",
-    "express",
-    "mongodb",
-    "rest-api",
-    "devboard"
-  ],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
-    "express": "^5.1.0",
-    "express-mongo-sanitize": "^2.2.0",
-    "express-rate-limit": "^8.1.0",
-    "express-validator": "^7.3.0",
-    "helmet": "^8.1.0",
-    "hpp": "^0.2.3",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.1",
-    "morgan": "^1.10.1",
-    "redis": "^5.8.2",
-    "swagger-ui-express": "^5.0.1",
-    "uuid": "^11.1.0",
-    "winston": "^3.18.3"
-  },
-  "devDependencies": {
-    "eslint": "^9.38.0",
-    "jest": "^30.2.0",
-    "mongodb-memory-server": "^11.0.1",
-    "nodemon": "^3.1.10",
-    "prettier": "^3.6.2",
-    "supertest": "^7.1.4"
+    "backend:dev": "npm --prefix backend run dev",
+    "backend:start": "npm --prefix backend start",
+    "backend:test": "npm --prefix backend test",
+    "backend:test:coverage": "npm --prefix backend run test:coverage",
+    "backend:lint": "npm --prefix backend run lint",
+    "backend:lint:fix": "npm --prefix backend run lint:fix",
+    "backend:docker:dev": "npm --prefix backend run docker:dev",
+    "backend:docker:down": "npm --prefix backend run docker:down",
+    "dev": "npm run backend:dev",
+    "start": "npm run backend:start",
+    "test": "npm run backend:test",
+    "lint": "npm run backend:lint"
   }
 }

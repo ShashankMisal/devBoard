@@ -1,10 +1,10 @@
 # DevBoard Agent Guide
 
-This repository is intended to become a monorepo with `backend/` and `frontend/` as top-level folders. Until that restructure happens, the current root contains the backend directly. Do not start frontend implementation in the root beside backend code; the backend should be moved into `backend/` first.
+This repository uses a monorepo layout with `backend/` and `frontend/` as top-level folders. The implemented backend lives in `backend/`; do not add backend code to the repository root. Frontend implementation belongs in `frontend/` once its roadmap phase begins.
 
 ## Backend Standards
 
-- The current backend in the repo root is the implemented source of truth until the planned move into `backend/`.
+- The current backend in `backend/` is the implemented source of truth.
 - The backend stack is Node.js, Express, MongoDB, Mongoose, Redis, JWT, Winston/Morgan, Jest/Supertest, and Docker.
 - Follow MVC + service-layer structure strictly.
 - Controllers only handle `req`/`res`.
