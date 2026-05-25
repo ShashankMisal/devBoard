@@ -1,0 +1,59 @@
+<div class="app-shell">
+  @if (isLoading()) {
+    <mat-progress-bar class="app-shell__progress" mode="indeterminate" aria-label="Loading"></mat-progress-bar>
+  }
+
+  <header class="app-shell__header">
+    <a class="app-shell__brand" routerLink="/dashboard" aria-label="DevBoard dashboard">
+      <span class="app-shell__brand-mark" aria-hidden="true">D</span>
+      <span>
+        <span class="app-shell__brand-name">DevBoard</span>
+        <span class="app-shell__brand-caption">Project operations</span>
+      </span>
+    </a>
+
+    <nav class="app-shell__nav" aria-label="Primary navigation">
+      @for (item of navItems; track item.path) {
+        <a
+          mat-button
+          [routerLink]="item.path"
+          routerLinkActive="app-shell__nav-link--active"
+          class="app-shell__nav-link"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="app-shell__actions" aria-label="Theme controls">
+      <button
+        mat-button
+        type="button"
+        [class.app-shell__theme-button--active]="themeMode() === 'light'"
+        (click)="setThemeMode('light')"
+      >
+        Light
+      </button>
+      <button
+        mat-button
+        type="button"
+        [class.app-shell__theme-button--active]="themeMode() === 'dark'"
+        (click)="setThemeMode('dark')"
+      >
+        Dark
+      </button>
+      <button
+        mat-button
+        type="button"
+        [class.app-shell__theme-button--active]="themeMode() === 'system'"
+        (click)="setThemeMode('system')"
+      >
+        System
+      </button>
+    </div>
+  </header>
+
+  <main class="app-shell__main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

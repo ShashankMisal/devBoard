@@ -1,0 +1,4 @@
+@mixin content-grid {
+  display: grid;
+  gap: var(--space-6);
+}

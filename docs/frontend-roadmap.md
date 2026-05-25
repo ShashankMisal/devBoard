@@ -84,6 +84,8 @@ frontend/src/
 ## Global Decisions
 
 - Use `SCSS` project-wide.
+- In global scss file add 1rem = 10px and add some global css necessary
+- use rem and other units as unit for css instead of px , avoid using px
 - Use Angular Material + Angular CDK as the UI foundation.
 - Use signals + services by default; no NgRx initially.
 - Use backend Swagger and implemented response shapes as the contract source of truth.
