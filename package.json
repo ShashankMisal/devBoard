@@ -20,5 +20,8 @@
     "start": "npm run backend:start",
     "test": "npm run backend:test",
     "lint": "npm run backend:lint"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0"
   }
 }
