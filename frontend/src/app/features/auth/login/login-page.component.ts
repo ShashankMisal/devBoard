@@ -26,6 +26,7 @@ export class LoginPageComponent {
   private readonly notificationService = inject(NotificationService);
 
   readonly isSubmitting = signal(false);
+  readonly isPasswordVisible = signal(false);
   readonly formError = signal('');
   readonly form = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
@@ -34,6 +35,10 @@ export class LoginPageComponent {
 
   getError(controlName: string): string {
     return getControlError(this.form, controlName);
+  }
+
+  togglePasswordVisibility(): void {
+    this.isPasswordVisible.update((isVisible) => !isVisible);
   }
 
   submit(): void {

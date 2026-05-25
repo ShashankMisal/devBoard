@@ -10,6 +10,23 @@
       <p class="profile-page__error">{{ formError() }}</p>
     }
 
+    <div class="profile-page__meta">
+      <span class="profile-page__badge profile-page__badge--role">
+        <span class="profile-page__badge-label">Role</span>
+        <span class="profile-page__badge-separator" aria-hidden="true"></span>
+        <span class="profile-page__badge-value">{{ user()?.role }}</span>
+      </span>
+      <span
+        class="profile-page__badge profile-page__badge--status"
+        [class.profile-page__badge--active]="user()?.isActive"
+        [class.profile-page__badge--inactive]="!user()?.isActive"
+      >
+        <span class="profile-page__badge-label">Status</span>
+        <span class="profile-page__badge-separator" aria-hidden="true"></span>
+        <span class="profile-page__badge-value">{{ user()?.isActive ? 'Active' : 'Inactive' }}</span>
+      </span>
+    </div>
+
     <mat-form-field appearance="outline">
       <mat-label>Name</mat-label>
       <input matInput type="text" formControlName="name" autocomplete="name" />
@@ -25,11 +42,6 @@
         <mat-error>{{ getError('email') }}</mat-error>
       }
     </mat-form-field>
-
-    <div class="profile-page__meta">
-      <span>Role: {{ user()?.role }}</span>
-      <span>Status: {{ user()?.isActive ? 'Active' : 'Inactive' }}</span>
-    </div>
 
     <div class="profile-page__actions">
       <button mat-flat-button type="submit" [disabled]="isSubmitting()">Save profile</button>

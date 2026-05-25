@@ -55,7 +55,65 @@
 }
 
 .profile-page__meta {
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+.profile-page__badge {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: var(--app-surface-muted);
+  color: var(--app-text);
+  line-height: 1;
+}
+
+.profile-page__badge-label {
   color: var(--app-text-muted);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.profile-page__badge-value {
+  font-weight: 750;
+  text-transform: capitalize;
+}
+
+.profile-page__badge-separator {
+  width: 1px;
+  align-self: stretch;
+  background: color-mix(in srgb, var(--app-border) 75%, transparent);
+}
+
+.profile-page__badge--role .profile-page__badge-value {
+  color: var(--app-primary-strong);
+}
+
+.profile-page__badge--status {
+  background: color-mix(in srgb, var(--app-success) 12%, var(--app-surface));
+}
+
+.profile-page__badge--active {
+  border-color: color-mix(in srgb, var(--app-success) 44%, var(--app-border));
+
+  .profile-page__badge-value {
+    color: var(--app-success);
+  }
+}
+
+.profile-page__badge--inactive {
+  border-color: color-mix(in srgb, var(--app-danger) 44%, var(--app-border));
+  background: color-mix(in srgb, var(--app-danger) 12%, var(--app-surface));
+
+  .profile-page__badge-value {
+    color: var(--app-danger);
+  }
 }
 
 .profile-page__actions {
@@ -63,6 +121,10 @@
 }
 
 @media (max-width: 560px) {
+  .profile-page__meta {
+    justify-content: flex-start;
+  }
+
   .profile-page__panel {
     padding: var(--space-5);
   }
