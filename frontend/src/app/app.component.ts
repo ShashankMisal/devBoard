@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+import { SessionService } from './core/auth/session.service';
 import { ThemeService } from './core/services/theme.service';
 
 @Component({
@@ -12,8 +13,12 @@ import { ThemeService } from './core/services/theme.service';
 })
 export class AppComponent {
   private readonly themeService = inject(ThemeService);
+  private readonly session = inject(SessionService);
+
+  readonly isBootstrapping = this.session.isBootstrapping;
 
   constructor() {
     this.themeService.resolvedTheme();
+    void this.session.bootstrap();
   }
 }

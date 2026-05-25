@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 import { AppShellComponent } from './core/layout/app-shell/app-shell.component';
 
 export const routes: Routes = [
@@ -14,26 +16,43 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/dashboard/dashboard-page.component').then((component) => component.DashboardPageComponent),
       },
       {
-        path: 'auth',
-        loadComponent: () => import('./features/auth/auth-page.component').then((component) => component.AuthPageComponent),
+        path: 'login',
+        canActivate: [guestGuard],
+        loadComponent: () =>
+          import('./features/auth/login/login-page.component').then((component) => component.LoginPageComponent),
+      },
+      {
+        path: 'register',
+        canActivate: [guestGuard],
+        loadComponent: () =>
+          import('./features/auth/register/register-page.component').then((component) => component.RegisterPageComponent),
+      },
+      {
+        path: 'profile',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/profile/profile-page.component').then((component) => component.ProfilePageComponent),
       },
       {
         path: 'projects',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/projects/projects-page.component').then((component) => component.ProjectsPageComponent),
       },
       {
         path: 'tasks',
+        canActivate: [authGuard],
         loadComponent: () => import('./features/tasks/tasks-page.component').then((component) => component.TasksPageComponent),
       },
     ],
   },
   {
     path: '**',
-    redirectTo: 'dashboard',
+    redirectTo: 'login',
   },
 ];

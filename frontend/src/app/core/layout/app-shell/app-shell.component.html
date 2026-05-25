@@ -12,44 +12,60 @@
       </span>
     </a>
 
-    <nav class="app-shell__nav" aria-label="Primary navigation">
-      @for (item of navItems; track item.path) {
-        <a
-          mat-button
-          [routerLink]="item.path"
-          routerLinkActive="app-shell__nav-link--active"
-          class="app-shell__nav-link"
-        >
-          {{ item.label }}
-        </a>
-      }
-    </nav>
+    @if (isAuthenticated()) {
+      <nav class="app-shell__nav" aria-label="Primary navigation">
+        @for (item of navItems; track item.path) {
+          <a
+            mat-button
+            [routerLink]="item.path"
+            routerLinkActive="app-shell__nav-link--active"
+            class="app-shell__nav-link"
+          >
+            {{ item.label }}
+          </a>
+        }
+      </nav>
+    } @else {
+      <span></span>
+    }
 
-    <div class="app-shell__actions" aria-label="Theme controls">
-      <button
-        mat-button
-        type="button"
-        [class.app-shell__theme-button--active]="themeMode() === 'light'"
-        (click)="setThemeMode('light')"
-      >
-        Light
-      </button>
-      <button
-        mat-button
-        type="button"
-        [class.app-shell__theme-button--active]="themeMode() === 'dark'"
-        (click)="setThemeMode('dark')"
-      >
-        Dark
-      </button>
-      <button
-        mat-button
-        type="button"
-        [class.app-shell__theme-button--active]="themeMode() === 'system'"
-        (click)="setThemeMode('system')"
-      >
-        System
-      </button>
+    <div class="app-shell__actions">
+      <div class="app-shell__theme-controls" aria-label="Theme controls">
+        <button
+          mat-button
+          type="button"
+          [class.app-shell__theme-button--active]="themeMode() === 'light'"
+          (click)="setThemeMode('light')"
+        >
+          Light
+        </button>
+        <button
+          mat-button
+          type="button"
+          [class.app-shell__theme-button--active]="themeMode() === 'dark'"
+          (click)="setThemeMode('dark')"
+        >
+          Dark
+        </button>
+        <button
+          mat-button
+          type="button"
+          [class.app-shell__theme-button--active]="themeMode() === 'system'"
+          (click)="setThemeMode('system')"
+        >
+          System
+        </button>
+      </div>
+
+      <div class="app-shell__session-actions" aria-label="Session controls">
+        @if (isAuthenticated()) {
+          <a mat-button routerLink="/profile" routerLinkActive="app-shell__nav-link--active">{{ user()?.name || 'Profile' }}</a>
+          <button mat-button type="button" (click)="logout()">Logout</button>
+        } @else {
+          <a mat-button routerLink="/login" routerLinkActive="app-shell__nav-link--active">Login</a>
+          <a mat-flat-button routerLink="/register">Register</a>
+        }
+      </div>
     </div>
   </header>
 

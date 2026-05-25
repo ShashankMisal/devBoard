@@ -1,1 +1,8 @@
-<router-outlet />
+@if (isBootstrapping()) {
+  <main class="app-bootstrap" aria-live="polite" aria-busy="true">
+    <span class="app-bootstrap__mark" aria-hidden="true">D</span>
+    <span>Preparing your workspace...</span>
+  </main>
+} @else {
+  <router-outlet />
+}
