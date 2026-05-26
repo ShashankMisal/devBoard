@@ -1,0 +1,186 @@
+.project-detail-page {
+  display: grid;
+  row-gap: var(--space-4);
+  margin-block-start: calc(-1 * var(--space-4));
+}
+
+.project-detail-page__back {
+  justify-self: start;
+  min-height: 3.2rem;
+  padding-inline: var(--space-2);
+  margin-block-end: calc(-1 * var(--space-3));
+}
+
+.project-detail-page__header,
+.project-detail-page__members-header,
+.project-detail-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-detail-page__eyebrow {
+  margin: 0 0 var(--space-2);
+  color: var(--app-primary-strong);
+  font-size: 0.8rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.project-detail-page__title,
+.project-detail-page__state h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+}
+
+.project-detail-page__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.project-detail-page__chip--archived {
+  --mdc-chip-elevated-container-color: color-mix(in srgb, var(--app-danger) 14%, var(--app-surface));
+}
+
+.project-detail-page__chip--active {
+  --mdc-chip-elevated-container-color: color-mix(in srgb, var(--app-success) 14%, var(--app-surface));
+  --mdc-chip-label-text-color: var(--app-success);
+  --mdc-chip-outline-color: color-mix(in srgb, var(--app-success) 44%, var(--app-border));
+  color: var(--app-success);
+}
+
+.project-detail-page__notice {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--app-danger) 35%, var(--app-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--app-danger) 10%, var(--app-surface));
+}
+
+.project-detail-page__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+  gap: var(--space-4);
+}
+
+.project-detail-page__panel,
+.project-detail-page__state {
+  padding: var(--space-6);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-md);
+  background: var(--app-surface);
+}
+
+.project-detail-page__panel h2,
+.project-detail-page__panel p,
+.project-detail-page__state p,
+.project-detail-page__empty {
+  margin: 0;
+}
+
+.project-detail-page__panel {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.project-detail-page__description-panel {
+  align-content: start;
+  gap: var(--space-2);
+}
+
+.project-detail-page__panel p,
+.project-detail-page__state p,
+.project-detail-page__members-header p,
+.project-detail-page__empty,
+.project-detail-page__meta dd {
+  color: var(--app-text-muted);
+  line-height: 1.6;
+}
+
+.project-detail-page__state {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.project-detail-page__state--error {
+  border-color: color-mix(in srgb, var(--app-danger) 40%, var(--app-border));
+}
+
+.project-detail-page__meta dl {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.project-detail-page__meta dt {
+  color: var(--app-text-muted);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.project-detail-page__meta dd {
+  margin: var(--space-1) 0 0;
+}
+
+.project-detail-page__members {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: var(--space-3);
+}
+
+.project-detail-page__member {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-md);
+  background: var(--app-surface-muted);
+}
+
+.project-detail-page__member strong,
+.project-detail-page__member span span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-detail-page__member span span {
+  color: var(--app-text-muted);
+}
+
+.project-detail-page__avatar {
+  display: grid;
+  flex: 0 0 3.2rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--app-primary);
+  color: var(--app-on-primary);
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+@media (max-width: 840px) {
+  .project-detail-page__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .project-detail-page__panel,
+  .project-detail-page__state {
+    padding: var(--space-5);
+  }
+}

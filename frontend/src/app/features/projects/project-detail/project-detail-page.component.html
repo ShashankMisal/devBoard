@@ -1,0 +1,114 @@
+<section class="project-detail-page">
+  <a class="project-detail-page__back" mat-button routerLink="/projects" aria-label="Back to projects">
+    <span aria-hidden="true">&larr;</span>
+    Back to projects
+  </a>
+
+  @if (projectsState.detailError()) {
+    <div class="project-detail-page__state project-detail-page__state--error">
+      <h1>Project unavailable</h1>
+      <p>{{ projectsState.detailError() }}</p>
+    </div>
+  } @else {
+    @if (projectsState.isDetailLoading() && !projectsState.selectedProject()) {
+      <div class="project-detail-page__state">
+        <h1>Loading project</h1>
+        <p>Fetching project details and members.</p>
+      </div>
+    } @else {
+      @if (projectsState.selectedProject(); as project) {
+        <header class="project-detail-page__header">
+          <div>
+            <p class="project-detail-page__eyebrow">Project</p>
+            <h1 class="project-detail-page__title">{{ project.title }}</h1>
+            <div class="project-detail-page__badges">
+              <mat-chip
+                [class.project-detail-page__chip--active]="project.status === 'active'"
+                [class.project-detail-page__chip--archived]="project.status === 'archived'"
+              >
+                {{ statusLabel(project.status) }}
+              </mat-chip>
+              <mat-chip>{{ projectsState.isOwner(project) ? 'Owner' : 'Member' }}</mat-chip>
+              @if (projectsState.isReadOnly(project)) {
+                <mat-chip>Read-only</mat-chip>
+              }
+            </div>
+          </div>
+
+          <div class="project-detail-page__actions">
+            @if (projectsState.canEdit(project)) {
+              <a mat-flat-button [routerLink]="['/projects', project._id, 'edit']">Edit</a>
+            }
+            @if (projectsState.canArchive(project)) {
+              <button mat-button color="warn" type="button" [disabled]="isStatusSubmitting()" (click)="confirmArchive(project)">
+                Archive
+              </button>
+            }
+            @if (projectsState.canUnarchive(project)) {
+              <button mat-flat-button type="button" [disabled]="isStatusSubmitting()" (click)="confirmUnarchive(project)">
+                Unarchive
+              </button>
+            }
+          </div>
+        </header>
+
+        @if (projectsState.isReadOnly(project)) {
+          <p class="project-detail-page__notice">This project is archived. It remains visible for reference, but project changes are disabled.</p>
+        }
+
+        <div class="project-detail-page__layout">
+          <article class="project-detail-page__panel project-detail-page__description-panel">
+            <h2>Description</h2>
+            <p>{{ project.description || 'No project description yet.' }}</p>
+          </article>
+
+          <aside class="project-detail-page__panel project-detail-page__meta">
+            <h2>Details</h2>
+            <dl>
+              <div>
+                <dt>Owner</dt>
+                <dd>{{ project.owner.name }} &middot; {{ project.owner.email }}</dd>
+              </div>
+              <div>
+                <dt>Updated</dt>
+                <dd>{{ project.updatedAt | date: 'medium' }}</dd>
+              </div>
+              <div>
+                <dt>Created</dt>
+                <dd>{{ project.createdAt | date: 'medium' }}</dd>
+              </div>
+            </dl>
+          </aside>
+        </div>
+
+        <section class="project-detail-page__panel">
+          <div class="project-detail-page__members-header">
+            <div>
+              <h2>Members</h2>
+              <p>{{ project.members.length }} project member{{ project.members.length === 1 ? '' : 's' }}</p>
+            </div>
+            @if (projectsState.canManageMembers(project)) {
+              <button mat-flat-button type="button" (click)="openAddMemberDialog()">Add member</button>
+            }
+          </div>
+
+          @if (project.members.length === 0) {
+            <p class="project-detail-page__empty">No members have been added yet.</p>
+          } @else {
+            <div class="project-detail-page__members" aria-label="Project members">
+              @for (member of project.members; track member._id) {
+                <div class="project-detail-page__member">
+                  <span class="project-detail-page__avatar" aria-hidden="true">{{ member.name.charAt(0) }}</span>
+                  <span>
+                    <strong>{{ member.name }}</strong>
+                    <span>{{ member.email }}</span>
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        </section>
+      }
+    }
+  }
+</section>

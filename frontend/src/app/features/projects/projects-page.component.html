@@ -1,0 +1,93 @@
+<section class="projects-page">
+  <header class="projects-page__header">
+    <div>
+      <p class="projects-page__eyebrow">Projects</p>
+      <h1 class="projects-page__title">Projects workspace</h1>
+      <p class="projects-page__description">Plan active work, review archived projects, and manage project access.</p>
+    </div>
+    <a mat-flat-button routerLink="/projects/new">New project</a>
+  </header>
+
+  <div class="projects-page__toolbar">
+    <mat-form-field appearance="outline" class="projects-page__filter" subscriptSizing="dynamic">
+      <mat-label>Status</mat-label>
+      <mat-select [value]="projectsState.query().status" (valueChange)="changeStatus($event)">
+        @for (option of statusOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (projectsState.projectsPage(); as page) {
+      <p class="projects-page__result-count">{{ page.totalDocs }} project{{ page.totalDocs === 1 ? '' : 's' }}</p>
+    }
+  </div>
+
+  @if (projectsState.listError()) {
+    <div class="projects-page__state projects-page__state--error">
+      <h2>Projects could not load</h2>
+      <p>{{ projectsState.listError() }}</p>
+      <button mat-button type="button" (click)="projectsState.loadProjects()">Try again</button>
+    </div>
+  } @else if (projectsState.isListLoading() && !projectsState.projectsPage()) {
+    <div class="projects-page__state">
+      <h2>Loading projects</h2>
+      <p>Fetching your accessible project workspace.</p>
+    </div>
+  } @else if (projectsState.projects().length === 0) {
+    <div class="projects-page__state">
+      <h2>No projects found</h2>
+      <p>Create a project or adjust the status filter to see archived work.</p>
+      <a mat-flat-button routerLink="/projects/new">Create project</a>
+    </div>
+  } @else {
+    <div class="projects-page__grid" aria-label="Project list">
+      @for (project of projectsState.projects(); track project._id) {
+        <mat-card class="projects-page__card" appearance="outlined">
+          @if (projectsState.isOwner(project)) {
+            <span class="projects-page__owner-badge" aria-label="Owner" matTooltip="Owner">
+              <span aria-hidden="true">♛</span>
+            </span>
+          }
+          <mat-card-header>
+            <mat-card-title>{{ project.title }}</mat-card-title>
+            <mat-card-subtitle>{{ ownershipLabel(project.owner._id) }} &middot; {{ project.owner.name }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="projects-page__badges" aria-label="Project metadata">
+              <mat-chip
+                [class.projects-page__chip--active]="project.status === 'active'"
+                [class.projects-page__chip--archived]="project.status === 'archived'"
+              >
+                {{ statusLabel(project.status) }}
+              </mat-chip>
+              <mat-chip>{{ project.members.length }} member{{ project.members.length === 1 ? '' : 's' }}</mat-chip>
+            </div>
+            <p class="projects-page__summary">
+              {{ project.description || 'No project description yet.' }}
+            </p>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <a mat-button [routerLink]="['/projects', project._id]">Open</a>
+            @if (projectsState.canEdit(project)) {
+              <a mat-button [routerLink]="['/projects', project._id, 'edit']">Edit</a>
+            }
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+
+    @if (projectsState.projectsPage(); as page) {
+      <mat-paginator
+        class="projects-page__paginator"
+        [length]="page.totalDocs"
+        [pageIndex]="page.currentPage - 1"
+        [pageSize]="projectsState.query().limit"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        showFirstLastButtons
+        aria-label="Project pages"
+        (page)="changePage($event)"
+      />
+    }
+  }
+</section>

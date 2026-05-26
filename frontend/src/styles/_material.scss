@@ -38,6 +38,53 @@ $dark-theme: mat.define-theme(
 
 :root {
   @include mat.all-component-themes($light-theme);
+
+  & {
+    --mat-form-field-container-height: 35px;
+    --mat-form-field-container-vertical-padding: 5px;
+    --mat-form-field-filled-with-label-container-padding-top: 12px;
+    --mat-form-field-filled-with-label-container-padding-bottom: 4px;
+    --mat-select-arrow-transform: translateY(-1px);
+    --mdc-text-button-label-text-size: 0.95rem;
+    --mdc-filled-button-label-text-size: 0.95rem;
+    --mdc-outlined-button-label-text-size: 0.95rem;
+    --mdc-protected-button-label-text-size: 0.95rem;
+    --mdc-text-button-label-text-weight: 650;
+    --mdc-filled-button-label-text-weight: 650;
+    --mdc-outlined-button-label-text-weight: 650;
+    --mdc-protected-button-label-text-weight: 650;
+    --mdc-text-button-container-shape: 6px;
+    --mdc-filled-button-container-shape: 6px;
+    --mdc-outlined-button-container-shape: 6px;
+    --mdc-protected-button-container-shape: 6px;
+    --mat-standard-button-toggle-shape: 6px;
+  }
+}
+
+.mat-mdc-form-field:not(:has(textarea)) {
+  .mat-mdc-text-field-wrapper {
+    height: 35px;
+  }
+
+  .mat-mdc-form-field-flex,
+  .mat-mdc-form-field-infix {
+    min-height: 35px;
+  }
+
+  .mat-mdc-form-field-infix {
+    display: flex;
+    align-items: center;
+    padding-block: 0;
+  }
+
+  .mat-mdc-input-element,
+  .mat-mdc-select-trigger {
+    line-height: 1.4;
+  }
+}
+
+.mat-mdc-option {
+  min-height: 35px;
 }
 
 :root[data-theme='dark'] {

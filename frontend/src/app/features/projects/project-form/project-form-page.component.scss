@@ -1,0 +1,85 @@
+.project-form-page {
+  display: grid;
+  gap: var(--space-6);
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.project-form-page__header,
+.project-form-page__panel,
+.project-form-page__state {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.project-form-page__eyebrow {
+  margin: 0;
+  color: var(--app-primary-strong);
+  font-size: 0.8rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.project-form-page__title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+}
+
+.project-form-page__description,
+.project-form-page__state p {
+  margin: 0;
+  color: var(--app-text-muted);
+  line-height: 1.6;
+}
+
+.project-form-page__panel,
+.project-form-page__state {
+  padding: var(--space-6);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-md);
+  background: var(--app-surface);
+}
+
+.project-form-page__state {
+  justify-items: start;
+}
+
+.project-form-page__state h2 {
+  margin: 0;
+}
+
+.project-form-page__state--error {
+  border-color: color-mix(in srgb, var(--app-danger) 40%, var(--app-border));
+}
+
+.project-form-page__error {
+  margin: 0;
+  color: var(--app-danger);
+  font-weight: 650;
+}
+
+.project-form-page__notice {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--app-danger) 35%, var(--app-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--app-danger) 10%, var(--app-surface));
+  color: var(--app-text);
+}
+
+.project-form-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+@media (max-width: 560px) {
+  .project-form-page__panel,
+  .project-form-page__state {
+    padding: var(--space-5);
+  }
+}
