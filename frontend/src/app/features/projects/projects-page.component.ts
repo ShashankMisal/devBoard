@@ -9,6 +9,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { SkeletonListComponent } from '../../shared/ui/skeleton-list/skeleton-list.component';
+import { UiStateComponent } from '../../shared/ui/ui-state/ui-state.component';
 import { ProjectStatus, ProjectStatusFilter } from './models/project.models';
 import { ProjectsStateService } from './services/projects-state.service';
 
@@ -23,6 +25,8 @@ import { ProjectsStateService } from './services/projects-state.service';
     MatSelectModule,
     MatTooltipModule,
     RouterLink,
+    SkeletonListComponent,
+    UiStateComponent,
   ],
   templateUrl: './projects-page.component.html',
   styleUrl: './projects-page.component.scss',

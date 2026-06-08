@@ -65,6 +65,7 @@ describe('LoginPageComponent', () => {
   it('maps backend field errors to the matching form control', () => {
     const error: AppApiError = {
       message: 'Validation failed.',
+      kind: 'validation',
       fields: { email: 'Please provide a valid email address.' },
     };
     session.login.and.returnValue(throwError(() => error));

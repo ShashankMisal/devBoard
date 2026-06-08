@@ -103,7 +103,7 @@ describe('TasksStateService', () => {
   });
 
   it('stores list errors from the API', () => {
-    const error: AppApiError = { message: 'Tasks failed.', fields: {} };
+    const error: AppApiError = { message: 'Tasks failed.', kind: 'server', fields: {} };
     tasksApi.getProjectTasks.and.returnValue(throwError(() => error));
 
     service.loadProjectTasks('project-1');

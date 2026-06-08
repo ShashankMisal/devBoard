@@ -24,30 +24,25 @@
   </div>
 
   @if (projectsState.listError()) {
-    <div class="projects-page__state projects-page__state--error">
-      <h2>Projects could not load</h2>
-      <p>{{ projectsState.listError() }}</p>
-      <button mat-button type="button" (click)="projectsState.loadProjects()">Try again</button>
-    </div>
+    <app-ui-state
+      title="Projects could not load"
+      [message]="projectsState.listError()"
+      actionLabel="Try again"
+      variant="error"
+      (action)="projectsState.loadProjects()"
+    />
   } @else if (projectsState.isListLoading() && !projectsState.projectsPage()) {
-    <div class="projects-page__state">
-      <h2>Loading projects</h2>
-      <p>Fetching your accessible project workspace.</p>
-    </div>
+    <app-ui-state title="Loading projects" message="Fetching your accessible project workspace." variant="loading" />
+    <app-skeleton-list [rows]="4" />
   } @else if (projectsState.projects().length === 0) {
-    <div class="projects-page__state">
-      <h2>No projects found</h2>
-      <p>Create a project or adjust the status filter to see archived work.</p>
-      <a mat-flat-button routerLink="/projects/new">Create project</a>
-    </div>
+    <app-ui-state title="No projects found" message="Create a project or adjust the status filter to see archived work." />
+    <a mat-flat-button class="projects-page__state-action" routerLink="/projects/new">Create project</a>
   } @else {
     <div class="projects-page__grid" aria-label="Project list">
       @for (project of projectsState.projects(); track project._id) {
         <mat-card class="projects-page__card" appearance="outlined">
           @if (projectsState.isOwner(project)) {
-            <span class="projects-page__owner-badge" aria-label="Owner" matTooltip="Owner">
-              <span aria-hidden="true">♛</span>
-            </span>
+            <span class="projects-page__owner-badge" aria-label="Owner" matTooltip="Owner">Owner</span>
           }
           <mat-card-header>
             <mat-card-title>{{ project.title }}</mat-card-title>

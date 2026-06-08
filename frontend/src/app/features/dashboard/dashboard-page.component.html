@@ -1,0 +1,126 @@
+<section class="dashboard-page" aria-labelledby="dashboard-title">
+  <header class="dashboard-page__header">
+    <div>
+      <p class="dashboard-page__eyebrow">Workspace</p>
+      <h1 id="dashboard-title" class="dashboard-page__title">Dashboard</h1>
+      <p class="dashboard-page__description">Review active project work and assigned tasks that need attention.</p>
+    </div>
+    <div class="dashboard-page__actions" aria-label="Dashboard quick actions">
+      <a mat-flat-button routerLink="/projects/new">New project</a>
+      <a mat-button routerLink="/projects">View projects</a>
+    </div>
+  </header>
+
+  @if (dashboardState.error()) {
+    <app-ui-state
+      title="Dashboard could not load"
+      [message]="dashboardState.error()"
+      actionLabel="Try again"
+      variant="error"
+      (action)="dashboardState.loadSummary()"
+    />
+  } @else if (dashboardState.isLoading() && !dashboardState.summary()) {
+    <app-ui-state title="Loading dashboard" message="Fetching your workspace summary." variant="loading" />
+    <app-skeleton-list [rows]="4" />
+  } @else {
+    @if (dashboardState.summary(); as summary) {
+      <section class="dashboard-page__metrics" aria-label="Workspace summary">
+        <mat-card class="dashboard-page__metric" appearance="outlined">
+          <mat-card-header>
+            <mat-card-title>Total projects</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <strong>{{ summary.projectCounts.total }}</strong>
+            <span>{{ summary.projectCounts.active }} active, {{ summary.projectCounts.archived }} archived</span>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="dashboard-page__metric" appearance="outlined">
+          <mat-card-header>
+            <mat-card-title>Assigned tasks</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <strong>{{ summary.taskCounts.assigned }}</strong>
+            <span>{{ summary.taskCounts.todo }} to do, {{ summary.taskCounts.inProgress }} in progress</span>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="dashboard-page__metric" appearance="outlined">
+          <mat-card-header>
+            <mat-card-title>Completed</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <strong>{{ summary.taskCounts.done }}</strong>
+            <span>assigned tasks marked done</span>
+          </mat-card-content>
+        </mat-card>
+      </section>
+
+      <div class="dashboard-page__content">
+        <section class="dashboard-page__panel" aria-labelledby="recent-projects-title">
+          <div class="dashboard-page__panel-header">
+            <div>
+              <h2 id="recent-projects-title">Recent projects</h2>
+              <p>Latest accessible project activity.</p>
+            </div>
+            <a mat-button routerLink="/projects">All projects</a>
+          </div>
+
+          @if (summary.recentProjects.length === 0) {
+            <app-ui-state title="No projects yet" message="Create your first project to start organizing DevBoard work." />
+          } @else {
+            <div class="dashboard-page__list">
+              @for (project of summary.recentProjects; track project._id) {
+                <article class="dashboard-page__list-item">
+                  <div>
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.description || 'No project description yet.' }}</p>
+                  </div>
+                  <div class="dashboard-page__item-meta">
+                    <mat-chip>{{ project.status === 'active' ? 'Active' : 'Archived' }}</mat-chip>
+                    <a mat-button [routerLink]="['/projects', project._id]" [attr.aria-label]="'Open project ' + project.title">Open</a>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="dashboard-page__panel" aria-labelledby="upcoming-tasks-title">
+          <div class="dashboard-page__panel-header">
+            <div>
+              <h2 id="upcoming-tasks-title">Upcoming assigned tasks</h2>
+              <p>Due today or later, limited to your accessible projects.</p>
+            </div>
+          </div>
+
+          @if (summary.upcomingAssignedTasks.length === 0) {
+            <app-ui-state title="No upcoming assigned tasks" message="Assigned tasks with future due dates will appear here." />
+          } @else {
+            <div class="dashboard-page__list">
+              @for (task of summary.upcomingAssignedTasks; track task._id) {
+                <article class="dashboard-page__list-item">
+                  <div>
+                    <h3>{{ task.title }}</h3>
+                    <p>
+                      {{ task.project.title }}
+                      &middot;
+                      {{ task.dueDate ? (task.dueDate | date: 'mediumDate') : 'No due date' }}
+                    </p>
+                  </div>
+                  <div class="dashboard-page__item-meta">
+                    <mat-chip>{{ taskStatusLabel(task.status) }}</mat-chip>
+                    <mat-chip>{{ taskPriorityLabel(task.priority) }}</mat-chip>
+                    <a mat-button [routerLink]="['/projects', task.project._id]" [attr.aria-label]="'Open project for task ' + task.title">
+                      Open
+                    </a>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </section>
+      </div>
+    }
+  }
+</section>

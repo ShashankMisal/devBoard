@@ -1,7 +1,7 @@
 @if (taskPanelMode(); as mode) {
   @if (projectsState.selectedProject(); as project) {
     <button class="project-detail-page__task-panel-backdrop" type="button" aria-label="Close task panel" (click)="closeTaskPanel()"></button>
-    <aside class="project-detail-page__task-panel" aria-label="Task panel">
+    <aside class="project-detail-page__task-panel" role="dialog" aria-modal="true" aria-label="Task panel">
       <app-task-panel
         [project]="project"
         [mode]="mode"
@@ -22,16 +22,11 @@
       </a>
 
       @if (projectsState.detailError()) {
-        <div class="project-detail-page__state project-detail-page__state--error">
-          <h1>Project unavailable</h1>
-          <p>{{ projectsState.detailError() }}</p>
-        </div>
+        <app-ui-state title="Project unavailable" [message]="projectsState.detailError()" variant="error" />
       } @else {
         @if (projectsState.isDetailLoading() && !projectsState.selectedProject()) {
-          <div class="project-detail-page__state">
-            <h1>Loading project</h1>
-            <p>Fetching project details and members.</p>
-          </div>
+          <app-ui-state title="Loading project" message="Fetching project details and members." variant="loading" />
+          <app-skeleton-list [rows]="3" />
         } @else {
           @if (projectsState.selectedProject(); as project) {
             <header class="project-detail-page__header">
@@ -145,21 +140,18 @@
               </div>
 
               @if (tasksState.listError()) {
-                <div class="project-detail-page__state project-detail-page__state--error">
-                  <h3>Tasks could not load</h3>
-                  <p>{{ tasksState.listError() }}</p>
-                  <button mat-button type="button" (click)="tasksState.loadProjectTasks(project._id, tasksState.query())">Try again</button>
-                </div>
+                <app-ui-state
+                  title="Tasks could not load"
+                  [message]="tasksState.listError()"
+                  actionLabel="Try again"
+                  variant="error"
+                  (action)="tasksState.loadProjectTasks(project._id, tasksState.query())"
+                />
               } @else if (tasksState.isListLoading() && !tasksState.tasksPage()) {
-                <div class="project-detail-page__state">
-                  <h3>Loading tasks</h3>
-                  <p>Fetching project tasks.</p>
-                </div>
+                <app-ui-state title="Loading tasks" message="Fetching project tasks." variant="loading" />
+                <app-skeleton-list [rows]="3" />
               } @else if (tasksState.tasks().length === 0) {
-                <div class="project-detail-page__state">
-                  <h3>No tasks found</h3>
-                  <p>Create a task or adjust the filters to review project work.</p>
-                </div>
+                <app-ui-state title="No tasks found" message="Create a task or adjust the filters to review project work." />
               } @else {
                 <div class="project-detail-page__task-list" aria-label="Project tasks">
                   @for (task of tasksState.tasks(); track task._id) {

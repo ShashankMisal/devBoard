@@ -49,6 +49,7 @@ const openApiSpec = {
     { name: 'Health', description: 'Service health and readiness checks' },
     { name: 'Auth', description: 'Registration, login, logout, and token refresh' },
     { name: 'Users', description: 'Authenticated profile management' },
+    { name: 'Dashboard', description: 'Authenticated project and task workspace summary' },
     { name: 'Projects', description: 'Project CRUD and member management' },
     { name: 'Tasks', description: 'Project task management and task operations' }
   ],
@@ -204,6 +205,36 @@ const openApiSpec = {
           currentPage: { type: 'integer', example: 1 },
           hasNextPage: { type: 'boolean', example: false },
           hasPrevPage: { type: 'boolean', example: false }
+        }
+      },
+      DashboardSummary: {
+        type: 'object',
+        properties: {
+          projectCounts: {
+            type: 'object',
+            properties: {
+              total: { type: 'integer', example: 3 },
+              active: { type: 'integer', example: 2 },
+              archived: { type: 'integer', example: 1 }
+            }
+          },
+          taskCounts: {
+            type: 'object',
+            properties: {
+              assigned: { type: 'integer', example: 4 },
+              todo: { type: 'integer', example: 1 },
+              inProgress: { type: 'integer', example: 2 },
+              done: { type: 'integer', example: 1 }
+            }
+          },
+          recentProjects: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/Project' }
+          },
+          upcomingAssignedTasks: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/Task' }
+          }
         }
       },
       RegisterRequest: {
@@ -469,6 +500,26 @@ const openApiSpec = {
               {
                 properties: {
                   data: { $ref: '#/components/schemas/User' }
+                }
+              }
+            ]
+          }),
+          401: buildSuccessResponse('Unauthorized', errorResponseSchema)
+        }
+      }
+    },
+    '/api/v1/dashboard/summary': {
+      get: {
+        tags: ['Dashboard'],
+        summary: 'Get the current user dashboard summary',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: buildSuccessResponse('Dashboard summary fetched successfully', {
+            allOf: [
+              { $ref: '#/components/schemas/ApiResponse' },
+              {
+                properties: {
+                  data: { $ref: '#/components/schemas/DashboardSummary' }
                 }
               }
             ]

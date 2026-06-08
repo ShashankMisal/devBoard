@@ -10,6 +10,7 @@ import { finalize } from 'rxjs';
 import { AppApiError } from '../../core/api/api.models';
 import { SessionService } from '../../core/auth/session.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { UiStateComponent } from '../../shared/ui/ui-state/ui-state.component';
 import { applyApiFieldErrors, getControlError } from '../../shared/utils/form-errors';
 
 @Component({
@@ -34,7 +35,7 @@ export class DeactivateAccountDialogComponent {
 
 @Component({
   selector: 'app-profile-page',
-  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, UiStateComponent],
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

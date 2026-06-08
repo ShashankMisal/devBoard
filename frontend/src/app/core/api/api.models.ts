@@ -26,8 +26,11 @@ export interface PaginatedResponse<T> {
   hasPrevPage: boolean;
 }
 
+export type AppApiErrorKind = 'validation' | 'auth' | 'forbidden' | 'not-found' | 'network' | 'server' | 'unknown';
+
 export interface AppApiError {
   message: string;
   status?: number;
+  kind: AppApiErrorKind;
   fields: Record<string, string>;
 }

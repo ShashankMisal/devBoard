@@ -31,6 +31,14 @@ The refresh endpoint accepts the refresh token from the cookie first, with reque
 | `PUT` | `/api/v1/users/me` |
 | `DELETE` | `/api/v1/users/me` |
 
+## Dashboard Endpoints
+
+| Method | Endpoint |
+| --- | --- |
+| `GET` | `/api/v1/dashboard/summary` |
+
+The dashboard summary returns authenticated, user-accessible project counts, assigned-task counts, recent projects, and upcoming assigned tasks. Project visibility follows the same owner/member rules as project list endpoints.
+
 ## Projects Endpoints
 
 | Method | Endpoint |

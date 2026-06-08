@@ -15,6 +15,7 @@ const errorHandler = require('./middlewares/errorHandler');
 const { generalLimiter } = require('./middlewares/rateLimiter');
 const { openApiSpec, swaggerUi, swaggerUiOptions } = require('./config/swagger');
 const authRoutes = require('./modules/auth/auth.routes');
+const dashboardRoutes = require('./modules/dashboard/dashboard.routes');
 const projectRoutes = require('./modules/projects/project.routes');
 const { projectTaskRouter, taskRouter } = require('./modules/tasks/task.routes');
 const userRoutes = require('./modules/users/user.routes');
@@ -124,6 +125,7 @@ apiRouter.get(
 );
 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/projects/:projectId/tasks', projectTaskRouter);
 app.use('/api/v1/projects', projectRoutes);

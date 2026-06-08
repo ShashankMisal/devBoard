@@ -14,6 +14,8 @@ import { combineLatest, finalize } from 'rxjs';
 
 import { AppApiError } from '../../../core/api/api.models';
 import { NotificationService } from '../../../core/services/notification.service';
+import { SkeletonListComponent } from '../../../shared/ui/skeleton-list/skeleton-list.component';
+import { UiStateComponent } from '../../../shared/ui/ui-state/ui-state.component';
 import { applyApiFieldErrors, getControlError } from '../../../shared/utils/form-errors';
 import { Task, TaskPanelMode, TaskPriorityFilter, TaskSort, TaskStatusFilter } from '../../tasks/models/task.models';
 import { TasksStateService } from '../../tasks/services/tasks-state.service';
@@ -156,7 +158,9 @@ export class ConfirmTaskDeleteDialogComponent {
     MatPaginatorModule,
     MatSelectModule,
     RouterLink,
+    SkeletonListComponent,
     TaskPanelComponent,
+    UiStateComponent,
   ],
   templateUrl: './project-detail-page.component.html',
   styleUrl: './project-detail-page.component.scss',

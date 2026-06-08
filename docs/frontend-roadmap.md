@@ -298,6 +298,13 @@ Deliverables:
 - accessible and responsive
 - architecture remains scalable
 
+Current Phase 5 status:
+
+- dashboard summary is backend-backed through `/api/v1/dashboard/summary`
+- dashboard, projects, project detail tasks, and profile use shared UI state patterns
+- frontend API errors include normalized error kinds and safe transient GET retry behavior
+- focused backend and frontend tests cover the new dashboard and API hardening paths
+
 ## Phase 6 — Frontend Testing And Delivery
 
 - Add:

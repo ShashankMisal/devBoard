@@ -54,6 +54,7 @@ describe('RegisterPageComponent', () => {
   it('maps duplicate email errors to the email control', () => {
     const error: AppApiError = {
       message: 'An account with this email already exists.',
+      kind: 'validation',
       fields: { email: 'An account with this email already exists.' },
     };
     session.register.and.returnValue(throwError(() => error));

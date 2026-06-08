@@ -116,7 +116,11 @@ describe('TaskPanelComponent', () => {
 
   it('maps backend field errors onto edit form controls', () => {
     const component = fixture.componentInstance;
-    const error: AppApiError = { message: 'Validation failed.', fields: { title: 'Title is already invalid.' } };
+    const error: AppApiError = {
+      message: 'Validation failed.',
+      kind: 'validation',
+      fields: { title: 'Title is already invalid.' },
+    };
     (state.updateTask as jasmine.Spy).and.returnValue(throwError(() => error));
 
     fixture.componentRef.setInput('mode', 'edit');

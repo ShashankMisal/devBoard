@@ -7,7 +7,7 @@
 
   <form class="profile-page__panel" [formGroup]="form" (ngSubmit)="submit()" novalidate>
     @if (formError()) {
-      <p class="profile-page__error">{{ formError() }}</p>
+      <app-ui-state title="Profile could not be saved" [message]="formError()" variant="error" />
     }
 
     <div class="profile-page__meta">

@@ -77,7 +77,7 @@ describe('ProjectsStateService', () => {
   });
 
   it('stores list errors from the API', () => {
-    const error: AppApiError = { message: 'Projects failed.', fields: {} };
+    const error: AppApiError = { message: 'Projects failed.', kind: 'server', fields: {} };
     projectsApi.getProjects.and.returnValue(throwError(() => error));
 
     service.loadProjects();

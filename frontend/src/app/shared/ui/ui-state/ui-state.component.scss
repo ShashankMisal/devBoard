@@ -1,0 +1,39 @@
+.ui-state {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-md);
+  background: var(--app-surface);
+}
+
+.ui-state__marker {
+  width: 2.25rem;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--app-primary) 56%, var(--app-border));
+}
+
+.ui-state__title,
+.ui-state__message {
+  margin: 0;
+}
+
+.ui-state__title {
+  font-size: 1.35rem;
+  line-height: 1.25;
+}
+
+.ui-state__message {
+  color: var(--app-text-muted);
+  line-height: 1.6;
+}
+
+.ui-state--error {
+  border-color: color-mix(in srgb, var(--app-danger) 40%, var(--app-border));
+}
+
+.ui-state--error .ui-state__marker {
+  background: var(--app-danger);
+}

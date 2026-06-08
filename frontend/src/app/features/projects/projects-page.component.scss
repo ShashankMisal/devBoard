@@ -68,20 +68,21 @@
   inset-inline-end: var(--space-3);
   z-index: 1;
   display: grid;
-  width: 2.4rem;
+  min-width: 2.4rem;
   height: 2.4rem;
   place-items: center;
+  padding: 0 var(--space-2);
   border: 1px solid color-mix(in srgb, var(--app-primary) 36%, var(--app-border));
   border-radius: 6px;
   background: color-mix(in srgb, var(--app-primary) 16%, var(--app-surface));
   color: var(--app-primary-strong);
-  font-size: 1.1rem;
+  font-size: 0.78rem;
   font-weight: 750;
   line-height: 1;
 }
 
 .projects-page__owner-badge + mat-card-header {
-  padding-inline-end: calc(var(--space-4) + 2.8rem);
+  padding-inline-end: calc(var(--space-4) + 4.2rem);
 }
 
 .projects-page__badges {
@@ -118,6 +119,10 @@
   --mat-paginator-container-background-color: var(--app-surface-muted);
   --mat-paginator-container-text-size: 0.95rem;
   --mat-select-trigger-text-size: 0.95rem;
+}
+
+.projects-page__state-action {
+  justify-self: start;
 }
 
 .projects-page__state {
