@@ -1,0 +1,136 @@
+<section class="task-panel">
+  <header class="task-panel__header">
+    <div>
+      <p class="task-panel__eyebrow">Task</p>
+      <h2>{{ title }}</h2>
+    </div>
+    <button mat-button type="button" (click)="closed.emit()">Close</button>
+  </header>
+
+  @if (tasksState.detailError()) {
+    <div class="task-panel__state task-panel__state--error">
+      <h3>Task unavailable</h3>
+      <p>{{ tasksState.detailError() }}</p>
+    </div>
+  } @else if (tasksState.isDetailLoading() && mode !== 'create') {
+    <div class="task-panel__state">
+      <h3>Loading task</h3>
+      <p>Fetching task details.</p>
+    </div>
+  } @else if (isFormMode) {
+    <form class="task-panel__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (formError()) {
+        <p class="task-panel__error">{{ formError() }}</p>
+      }
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" autocomplete="off" />
+        @if (getError('title')) {
+          <mat-error>{{ getError('title') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="3"></textarea>
+        @if (getError('description')) {
+          <mat-error>{{ getError('description') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="task-panel__grid">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            @for (option of statusOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Priority</mat-label>
+          <mat-select formControlName="priority">
+            @for (option of priorityOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Assignee</mat-label>
+        <mat-select formControlName="assignee">
+          <mat-option value="">Unassigned</mat-option>
+          @for (user of assigneeOptions; track user._id) {
+            <mat-option [value]="user._id">{{ user.name }} &middot; {{ user.email }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Due date</mat-label>
+        <input matInput type="date" formControlName="dueDate" />
+        @if (getError('dueDate')) {
+          <mat-error>{{ getError('dueDate') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="task-panel__actions">
+        <button mat-button type="button" (click)="closed.emit()">Cancel</button>
+        <button mat-flat-button type="submit" [disabled]="isSubmitting()">
+          {{ mode === 'create' ? 'Create task' : 'Save task' }}
+        </button>
+      </div>
+    </form>
+  } @else {
+    @if (task; as selectedTask) {
+      <div class="task-panel__detail">
+        <div class="task-panel__badges">
+          <mat-chip>{{ tasksState.statusLabel(selectedTask.status) }}</mat-chip>
+          <mat-chip>{{ tasksState.priorityLabel(selectedTask.priority) }} priority</mat-chip>
+        </div>
+
+        <section>
+          <h3>Description</h3>
+          <p>{{ selectedTask.description || 'No task description yet.' }}</p>
+        </section>
+
+        <dl>
+          <div>
+            <dt>Assignee</dt>
+            <dd>
+              @if (selectedTask.assignee) {
+                {{ selectedTask.assignee.name }} &middot; {{ selectedTask.assignee.email }}
+              } @else {
+                Unassigned
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Created by</dt>
+            <dd>{{ selectedTask.createdBy.name }} &middot; {{ selectedTask.createdBy.email }}</dd>
+          </div>
+          <div>
+            <dt>Due date</dt>
+            <dd>{{ selectedTask.dueDate ? (selectedTask.dueDate | date: 'mediumDate') : 'No due date' }}</dd>
+          </div>
+          <div>
+            <dt>Updated</dt>
+            <dd>{{ selectedTask.updatedAt | date: 'medium' }}</dd>
+          </div>
+        </dl>
+
+        <div class="task-panel__actions">
+          @if (tasksState.canDelete(project, selectedTask)) {
+            <button mat-button color="warn" type="button" (click)="requestDelete()">Delete</button>
+          }
+          @if (tasksState.canUpdate(project, selectedTask)) {
+            <button mat-flat-button type="button" (click)="requestEdit()">Edit task</button>
+          }
+        </div>
+      </div>
+    }
+  }
+</section>

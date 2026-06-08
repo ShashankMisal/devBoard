@@ -40,6 +40,7 @@ $dark-theme: mat.define-theme(
   @include mat.all-component-themes($light-theme);
 
   & {
+    --app-form-field-height: 35px;
     --mat-form-field-container-height: 35px;
     --mat-form-field-container-vertical-padding: 5px;
     --mat-form-field-filled-with-label-container-padding-top: 12px;
@@ -63,17 +64,18 @@ $dark-theme: mat.define-theme(
 
 .mat-mdc-form-field:not(:has(textarea)) {
   .mat-mdc-text-field-wrapper {
-    height: 35px;
+    height: var(--app-form-field-height);
   }
 
   .mat-mdc-form-field-flex,
   .mat-mdc-form-field-infix {
-    min-height: 35px;
+    min-height: var(--app-form-field-height);
   }
 
   .mat-mdc-form-field-infix {
     display: flex;
     align-items: center;
+    height: var(--app-form-field-height);
     padding-block: 0;
   }
 
@@ -81,10 +83,21 @@ $dark-theme: mat.define-theme(
   .mat-mdc-select-trigger {
     line-height: 1.4;
   }
+
+  .mat-mdc-select-value {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.mat-mdc-form-field:not(.mat-mdc-form-field-invalid) {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
 }
 
 .mat-mdc-option {
-  min-height: 35px;
+  min-height: var(--app-form-field-height);
 }
 
 :root[data-theme='dark'] {

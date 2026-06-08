@@ -1,0 +1,107 @@
+.task-panel {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  width: min(42rem, calc(100vw - 2rem));
+  min-height: 100%;
+  padding: var(--space-6);
+  background: var(--app-surface);
+  color: var(--app-text);
+}
+
+.task-panel__header,
+.task-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-panel__eyebrow {
+  margin: 0 0 var(--space-1);
+  color: var(--app-primary-strong);
+  font-size: 0.8rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.task-panel h2,
+.task-panel h3,
+.task-panel p {
+  margin: 0;
+}
+
+.task-panel__form,
+.task-panel__detail {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.task-panel__actions {
+  margin-block-start: var(--space-2);
+}
+
+.task-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.task-panel__error,
+.task-panel__state--error {
+  color: var(--app-danger);
+}
+
+.task-panel__state {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-md);
+  background: var(--app-surface-muted);
+}
+
+.task-panel__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.task-panel__detail section,
+.task-panel__detail dl {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.task-panel__detail p,
+.task-panel__detail dd {
+  color: var(--app-text-muted);
+  line-height: 1.6;
+}
+
+.task-panel__detail dt {
+  color: var(--app-text-muted);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.task-panel__detail dd {
+  margin: var(--space-1) 0 0;
+}
+
+@media (max-width: 560px) {
+  .task-panel {
+    width: 100vw;
+    padding: var(--space-5);
+  }
+
+  .task-panel__grid {
+    grid-template-columns: 1fr;
+  }
+}

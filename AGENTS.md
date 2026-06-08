@@ -65,6 +65,7 @@ This repository uses a monorepo layout with `backend/` and `frontend/` as top-le
 - Consider frontend performance and bundle size during implementation.
 - Use lazy loading for frontend feature areas.
 - Prefer solutions that are easy to debug and maintain over clever abstractions.
+- follow industry commit standards while doing the commits
 
 ## Communication Style
 

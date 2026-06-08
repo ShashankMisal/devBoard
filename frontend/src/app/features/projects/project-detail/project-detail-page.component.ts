@@ -7,12 +7,17 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { combineLatest, finalize } from 'rxjs';
 
 import { AppApiError } from '../../../core/api/api.models';
 import { NotificationService } from '../../../core/services/notification.service';
 import { applyApiFieldErrors, getControlError } from '../../../shared/utils/form-errors';
+import { Task, TaskPanelMode, TaskPriorityFilter, TaskSort, TaskStatusFilter } from '../../tasks/models/task.models';
+import { TasksStateService } from '../../tasks/services/tasks-state.service';
+import { TaskPanelComponent } from '../../tasks/task-panel/task-panel.component';
 import { Project, ProjectStatus } from '../models/project.models';
 import { ProjectsStateService } from '../services/projects-state.service';
 
@@ -125,26 +130,89 @@ export class ConfirmProjectStatusDialogComponent {
 }
 
 @Component({
+  selector: 'app-confirm-task-delete-dialog',
+  imports: [MatButtonModule, MatDialogModule],
+  template: `
+    <h2 mat-dialog-title>Delete task?</h2>
+    <mat-dialog-content>This permanently removes the task from the project.</mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="dialogRef.close(false)">Cancel</button>
+      <button mat-flat-button color="warn" type="button" (click)="dialogRef.close(true)">Delete</button>
+    </mat-dialog-actions>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ConfirmTaskDeleteDialogComponent {
+  readonly dialogRef = inject(MatDialogRef<ConfirmTaskDeleteDialogComponent, boolean>);
+}
+
+@Component({
   selector: 'app-project-detail-page',
-  imports: [DatePipe, MatButtonModule, MatChipsModule, RouterLink],
+  imports: [
+    DatePipe,
+    MatButtonModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatPaginatorModule,
+    MatSelectModule,
+    RouterLink,
+    TaskPanelComponent,
+  ],
   templateUrl: './project-detail-page.component.html',
   styleUrl: './project-detail-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
   private readonly notificationService = inject(NotificationService);
   readonly projectsState = inject(ProjectsStateService);
+  readonly tasksState = inject(TasksStateService);
   readonly isStatusSubmitting = signal(false);
+  readonly taskPanelMode = signal<TaskPanelMode | null>(null);
+  readonly statusOptions: { value: TaskStatusFilter; label: string }[] = [
+    { value: 'all', label: 'All statuses' },
+    { value: 'todo', label: 'To do' },
+    { value: 'in-progress', label: 'In progress' },
+    { value: 'done', label: 'Done' },
+  ];
+  readonly priorityOptions: { value: TaskPriorityFilter; label: string }[] = [
+    { value: 'all', label: 'All priorities' },
+    { value: 'low', label: 'Low' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'high', label: 'High' },
+  ];
+  readonly sortOptions: { value: TaskSort; label: string }[] = [
+    { value: 'newest', label: 'Newest' },
+    { value: 'dueDate', label: 'Due date' },
+    { value: 'priority', label: 'Priority' },
+  ];
+  private loadedProjectId = '';
 
   constructor() {
-    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+    combineLatest([this.route.paramMap, this.route.queryParamMap]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(([params, queryParams]) => {
       const projectId = params.get('id');
 
       if (projectId) {
-        this.projectsState.loadProject(projectId);
+        if (this.loadedProjectId !== projectId) {
+          this.loadedProjectId = projectId;
+          this.projectsState.loadProject(projectId);
+          this.closeTaskPanel();
+        }
+
+        const taskStatus = queryParams.get('taskStatus');
+        const taskPriority = queryParams.get('taskPriority');
+        const taskSortBy = queryParams.get('taskSortBy');
+
+        this.tasksState.loadProjectTasks(projectId, {
+          page: Number(queryParams.get('taskPage') ?? 1),
+          limit: Number(queryParams.get('taskLimit') ?? 10),
+          status: taskStatus === 'todo' || taskStatus === 'in-progress' || taskStatus === 'done' ? taskStatus : 'all',
+          priority: taskPriority === 'low' || taskPriority === 'medium' || taskPriority === 'high' ? taskPriority : 'all',
+          sortBy: taskSortBy === 'dueDate' || taskSortBy === 'priority' ? taskSortBy : 'newest',
+        });
       }
     });
   }
@@ -171,6 +239,75 @@ export class ProjectDetailPageComponent {
 
   statusLabel(status: ProjectStatus): string {
     return status === 'active' ? 'Active' : 'Archived';
+  }
+
+  changeTaskStatus(status: TaskStatusFilter): void {
+    this.updateTaskQuery({ taskPage: 1, taskStatus: status === 'all' ? null : status });
+  }
+
+  changeTaskPriority(priority: TaskPriorityFilter): void {
+    this.updateTaskQuery({ taskPage: 1, taskPriority: priority === 'all' ? null : priority });
+  }
+
+  changeTaskSort(sortBy: TaskSort): void {
+    this.updateTaskQuery({ taskPage: 1, taskSortBy: sortBy === 'newest' ? null : sortBy });
+  }
+
+  changeTaskPage(event: PageEvent): void {
+    this.updateTaskQuery({
+      taskPage: event.pageIndex + 1,
+      taskLimit: event.pageSize,
+    });
+  }
+
+  openCreateTaskPanel(): void {
+    this.tasksState.clearSelectedTask();
+    this.taskPanelMode.set('create');
+  }
+
+  openTaskPanel(task: Task, mode: TaskPanelMode = 'detail'): void {
+    this.taskPanelMode.set(mode);
+    this.tasksState.loadTask(task._id);
+  }
+
+  closeTaskPanel(): void {
+    this.taskPanelMode.set(null);
+    this.tasksState.clearSelectedTask();
+  }
+
+  switchTaskPanelToEdit(task: Task): void {
+    this.taskPanelMode.set('edit');
+    this.tasksState.loadTask(task._id);
+  }
+
+  handleTaskSaved(): void {
+    const project = this.projectsState.selectedProject();
+
+    if (project) {
+      this.tasksState.loadProjectTasks(project._id, this.tasksState.query());
+    }
+
+    this.taskPanelMode.set('detail');
+  }
+
+  confirmTaskDelete(task: Task): void {
+    const dialogRef = this.dialog.open(ConfirmTaskDeleteDialogComponent, {
+      width: 'min(420px, calc(100vw - 32px))',
+    });
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((confirmed) => {
+      if (confirmed) {
+        this.deleteTask(task);
+      }
+    });
+  }
+
+  taskStatusLabel(status: Task['status']): string {
+    return this.tasksState.statusLabel(status);
+  }
+
+  taskPriorityLabel(priority: Task['priority']): string {
+    return this.tasksState.priorityLabel(priority);
   }
 
   private confirmStatusChange(project: Project, archive: boolean): void {
@@ -208,5 +345,30 @@ export class ProjectDetailPageComponent {
           this.notificationService.error(error.message);
         },
       });
+  }
+
+  private deleteTask(task: Task): void {
+    this.tasksState.deleteTask(task._id).subscribe({
+      next: () => {
+        this.notificationService.success('Task deleted successfully.');
+        this.closeTaskPanel();
+
+        const project = this.projectsState.selectedProject();
+        if (project) {
+          this.tasksState.loadProjectTasks(project._id, this.tasksState.query());
+        }
+      },
+      error: (error: AppApiError) => {
+        this.notificationService.error(error.message);
+      },
+    });
+  }
+
+  private updateTaskQuery(queryParams: Record<string, string | number | null>): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge',
+    });
   }
 }

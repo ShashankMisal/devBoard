@@ -2,10 +2,12 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 
 import { NotificationService } from '../../../core/services/notification.service';
+import { Task, TasksPage } from '../../tasks/models/task.models';
+import { TasksStateService } from '../../tasks/services/tasks-state.service';
 import { Project } from '../models/project.models';
 import { ProjectsStateService } from '../services/projects-state.service';
 import { AddProjectMemberDialogComponent, ProjectDetailPageComponent } from './project-detail-page.component';
@@ -19,6 +21,35 @@ const project: Project = {
   status: 'active',
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-02T00:00:00.000Z',
+};
+
+const task: Task = {
+  _id: 'task-1',
+  title: 'Build task UI',
+  description: 'Create the project task experience.',
+  project: {
+    _id: project._id,
+    title: project.title,
+    status: project.status,
+    owner: project.owner,
+    members: project.members,
+  },
+  assignee: project.members[0],
+  createdBy: project.owner,
+  status: 'todo',
+  priority: 'medium',
+  dueDate: null,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+};
+
+const tasksPage: TasksPage = {
+  data: [task],
+  totalDocs: 1,
+  totalPages: 1,
+  currentPage: 1,
+  hasNextPage: false,
+  hasPrevPage: false,
 };
 
 describe('ProjectDetailPageComponent', () => {
@@ -35,13 +66,38 @@ describe('ProjectDetailPageComponent', () => {
       isOwner: jasmine.createSpy('isOwner').and.returnValue(false),
       isReadOnly: jasmine.createSpy('isReadOnly').and.returnValue(true),
     };
+    const tasksState = {
+      selectedTask: signal<Task | null>(null),
+      tasksPage: signal<TasksPage | null>(tasksPage),
+      tasks: signal<Task[]>([task]),
+      query: signal({ page: 1, limit: 10, status: 'all', priority: 'all', sortBy: 'newest' }),
+      listError: signal(''),
+      isListLoading: signal(false),
+      loadProjectTasks: jasmine.createSpy('loadProjectTasks'),
+      clearSelectedTask: jasmine.createSpy('clearSelectedTask'),
+      loadTask: jasmine.createSpy('loadTask'),
+      canCreate: jasmine.createSpy('canCreate').and.returnValue(false),
+      canUpdate: jasmine.createSpy('canUpdate').and.returnValue(false),
+      canDelete: jasmine.createSpy('canDelete').and.returnValue(false),
+      statusLabel: jasmine.createSpy('statusLabel').and.returnValue('To do'),
+      priorityLabel: jasmine.createSpy('priorityLabel').and.returnValue('Medium'),
+      deleteTask: jasmine.createSpy('deleteTask'),
+    };
 
     await TestBed.configureTestingModule({
       imports: [ProjectDetailPageComponent],
       providers: [
         provideNoopAnimations(),
         { provide: ProjectsStateService, useValue: state },
-        { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: project._id })) } },
+        { provide: TasksStateService, useValue: tasksState },
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of(convertToParamMap({ id: project._id })),
+            queryParamMap: of(convertToParamMap({})),
+          },
+        },
         { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'info']) },
       ],
     }).compileComponents();
@@ -58,6 +114,7 @@ describe('ProjectDetailPageComponent', () => {
     expect(text).toContain('Archived');
     expect(actions).not.toContain('Edit');
     expect(text).not.toContain('Add member');
+    expect(text).not.toContain('New task');
     expect(actions).not.toContain('Archive');
   });
 });
