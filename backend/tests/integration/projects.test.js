@@ -211,4 +211,119 @@ describe('Project integration', () => {
     expect(missingUserResponse.statusCode).toBe(404);
     expect(missingUserResponse.body.message).toBe('Member user was not found.');
   });
+
+  it('returns project task board columns for accessible projects', async () => {
+    const owner = await User.create({
+      name: 'Board Owner',
+      email: 'board-owner@example.com',
+      password: 'Password1@'
+    });
+    const member = await User.create({
+      name: 'Board Member',
+      email: 'board-member@example.com',
+      password: 'Password1@'
+    });
+    const project = await Project.create({
+      title: 'Kanban Project',
+      owner: owner._id,
+      members: [member._id]
+    });
+
+    await Task.create([
+      {
+        title: 'Todo task',
+        project: project._id,
+        createdBy: owner._id,
+        assignee: member._id,
+        status: 'todo',
+        priority: 'medium'
+      },
+      {
+        title: 'In progress task',
+        project: project._id,
+        createdBy: owner._id,
+        assignee: member._id,
+        status: 'in-progress',
+        priority: 'high'
+      },
+      {
+        title: 'Done task',
+        project: project._id,
+        createdBy: owner._id,
+        status: 'done',
+        priority: 'low'
+      }
+    ]);
+
+    const response = await request(app)
+      .get(`/api/v1/projects/${project._id}/tasks/board?sortBy=priority`)
+      .set(buildAuthHeader(member));
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Task board fetched successfully.');
+    expect(response.body.data.totalDocs).toBe(3);
+    expect(response.body.data.columns.map((column) => column.status)).toEqual(['todo', 'in-progress', 'done']);
+    expect(response.body.data.columns.map((column) => column.count)).toEqual([1, 1, 1]);
+    expect(response.body.data.columns[0].tasks[0].title).toBe('Todo task');
+    expect(response.body.data.columns[0].tasks[0].assignee.email).toBe('board-member@example.com');
+  });
+
+  it('rejects project task board access for outsiders', async () => {
+    const owner = await User.create({
+      name: 'Private Board Owner',
+      email: 'private-board-owner@example.com',
+      password: 'Password1@'
+    });
+    const outsider = await User.create({
+      name: 'Private Board Outsider',
+      email: 'private-board-outsider@example.com',
+      password: 'Password1@'
+    });
+    const project = await Project.create({
+      title: 'Private Kanban Project',
+      owner: owner._id
+    });
+
+    const response = await request(app)
+      .get(`/api/v1/projects/${project._id}/tasks/board`)
+      .set(buildAuthHeader(outsider));
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.message).toBe('You do not have access to this project.');
+  });
+
+  it('allows archived project boards to be read but rejects task moves', async () => {
+    const owner = await User.create({
+      name: 'Archived Board Owner',
+      email: 'archived-board-owner@example.com',
+      password: 'Password1@'
+    });
+    const project = await Project.create({
+      title: 'Archived Kanban Project',
+      owner: owner._id,
+      status: 'archived'
+    });
+    const task = await Task.create({
+      title: 'Archived move task',
+      project: project._id,
+      createdBy: owner._id,
+      status: 'todo',
+      priority: 'medium'
+    });
+
+    const boardResponse = await request(app)
+      .get(`/api/v1/projects/${project._id}/tasks/board`)
+      .set(buildAuthHeader(owner));
+
+    expect(boardResponse.statusCode).toBe(200);
+    expect(boardResponse.body.data.totalDocs).toBe(1);
+
+    const moveResponse = await request(app)
+      .put(`/api/v1/tasks/${task._id}`)
+      .set(buildAuthHeader(owner))
+      .send({ status: 'done' });
+
+    expect(moveResponse.statusCode).toBe(403);
+    expect(moveResponse.body.message).toBe('Archived projects are read-only. Cannot update tasks.');
+  });
 });

@@ -335,6 +335,47 @@ Deliverables:
 - production build ready
 - deployable alongside backend cleanly
 
+Current Phase 6 status:
+
+- Prettier, ESLint, CI-style test scripts, coverage scripts, and production build scripts exist.
+- frontend setup, architecture, theme, testing, and static-delivery docs are current.
+- E2E tests and frontend Docker support remain intentionally deferred.
+
+## Phase 7 — Project Kanban Board
+
+- Add project-scoped Kanban task board:
+  - default task view on project detail pages
+  - fixed columns for `todo`, `in-progress`, and `done`
+  - board/list toggle so the existing paginated task list remains available
+  - Angular CDK drag-and-drop for status changes
+- Add backend board API:
+  - `GET /api/v1/projects/:projectId/tasks/board`
+  - returns all accessible project tasks grouped by status
+  - uses existing project access rules and task population
+  - supports board priority filtering and sorting
+- Preserve backend-driven task writes:
+  - status moves still use `PUT /api/v1/tasks/:id`
+  - archived projects remain readable but read-only
+  - client drag permissions mirror existing update permissions
+- Add optimistic frontend board state:
+  - immediate UI move on drop
+  - API persistence through task state service
+  - rollback and notification on failed moves
+
+Deliverables:
+
+- project Kanban board as primary task surface
+- existing task list retained as alternate view
+- board endpoint documented in Swagger and backend API contract
+- focused backend and frontend tests for board loading and moves
+
+Current Phase 7 status:
+
+- implemented project Kanban board with Angular CDK drag-and-drop
+- implemented `GET /api/v1/projects/:projectId/tasks/board`
+- added optimistic move/rollback behavior in frontend task state
+- added backend integration tests and frontend unit/component tests
+
 ## Integration Rules With Existing Backend
 
 - Use the implemented backend response envelope consistently.
@@ -348,7 +389,6 @@ Deliverables:
 
 ## Future Features
 
-- Kanban drag-and-drop
 - task comments
 - activity timeline
 - project invites
@@ -386,5 +426,5 @@ Deliverables:
 - Backend should be reorganized into `backend/` before frontend implementation begins.
 - Angular Material and SCSS are mandatory frontend choices.
 - Signals + services are the default state model; NgRx is deferred.
-- Initial tasks UX should be list/detail, not Kanban-first.
+- Initial task CRUD started as list/detail, and Phase 7 made project Kanban the default task view.
 - Frontend and backend should integrate smoothly now and remain separately deployable later.

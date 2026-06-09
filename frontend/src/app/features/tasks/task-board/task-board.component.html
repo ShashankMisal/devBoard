@@ -1,0 +1,57 @@
+<div class="task-board" aria-label="Project Kanban board">
+  @for (column of board.columns; track column.status) {
+    <section class="task-board__column" [attr.aria-label]="column.label + ' tasks'">
+      <header class="task-board__column-header">
+        <h3>{{ column.label }}</h3>
+        <span>{{ column.count }}</span>
+      </header>
+
+      <div
+        class="task-board__drop-list"
+        cdkDropList
+        [id]="dropListId(column.status)"
+        [cdkDropListData]="column.status"
+        [cdkDropListConnectedTo]="columnIds"
+        (cdkDropListDropped)="dropTask($event)"
+      >
+        @if (column.tasks.length === 0) {
+          <p class="task-board__empty">No tasks in this column.</p>
+        }
+
+        @for (task of column.tasks; track task._id) {
+          <article
+            class="task-board__card"
+            cdkDrag
+            [cdkDragData]="task"
+            [cdkDragDisabled]="!tasksState.canUpdate(project, task)"
+          >
+            <button class="task-board__card-main" type="button" (click)="taskOpened.emit(task)">
+              <span class="task-board__card-title">{{ task.title }}</span>
+              <span class="task-board__card-meta">
+                {{ task.assignee?.name || 'Unassigned' }}
+                &middot;
+                {{ task.dueDate ? (task.dueDate | date: 'mediumDate') : 'No due date' }}
+              </span>
+            </button>
+
+            <div class="task-board__card-badges">
+              <mat-chip>{{ tasksState.priorityLabel(task.priority) }}</mat-chip>
+              @if (!tasksState.canUpdate(project, task)) {
+                <mat-chip>Locked</mat-chip>
+              }
+            </div>
+
+            <div class="task-board__card-actions">
+              @if (tasksState.canUpdate(project, task)) {
+                <button mat-button type="button" (click)="editRequested.emit(task)">Edit</button>
+              }
+              @if (tasksState.canDelete(project, task)) {
+                <button mat-button color="warn" type="button" (click)="deleteRequested.emit(task)">Delete</button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  }
+</div>

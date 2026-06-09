@@ -12,6 +12,7 @@ const taskRouter = express.Router();
 projectTaskRouter.use(verifyJWT);
 taskRouter.use(verifyJWT);
 
+projectTaskRouter.get('/board', asyncWrapper(taskController.getProjectTaskBoard));
 projectTaskRouter.get('/', asyncWrapper(taskController.getTasksByProject));
 projectTaskRouter.post('/', createTaskValidation, validate, asyncWrapper(taskController.createProjectTask));
 

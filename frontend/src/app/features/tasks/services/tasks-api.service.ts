@@ -2,7 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { ApiClient } from '../../../core/api/api-client.service';
-import { CreateTaskRequest, Task, TasksPage, TasksQuery, UpdateTaskRequest } from '../models/task.models';
+import {
+  CreateTaskRequest,
+  Task,
+  TaskBoard,
+  TaskBoardQuery,
+  TasksPage,
+  TasksQuery,
+  UpdateTaskRequest,
+} from '../models/task.models';
 
 @Injectable({ providedIn: 'root' })
 export class TasksApiService {
@@ -27,6 +35,20 @@ export class TasksApiService {
     }
 
     return this.apiClient.get<TasksPage>(`/projects/${projectId}/tasks`, { params });
+  }
+
+  getProjectTaskBoard(projectId: string, query: TaskBoardQuery): Observable<TaskBoard> {
+    const params: Record<string, string> = {};
+
+    if (query.priority !== 'all') {
+      params['priority'] = query.priority;
+    }
+
+    if (query.sortBy !== 'newest') {
+      params['sortBy'] = query.sortBy;
+    }
+
+    return this.apiClient.get<TaskBoard>(`/projects/${projectId}/tasks/board`, { params });
   }
 
   createProjectTask(projectId: string, payload: CreateTaskRequest): Observable<Task> {

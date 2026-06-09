@@ -56,6 +56,7 @@ Only projects accessible to the authenticated user are returned. Archived projec
 
 | Method | Endpoint |
 | --- | --- |
+| `GET` | `/api/v1/projects/:projectId/tasks/board` |
 | `GET` | `/api/v1/projects/:projectId/tasks` |
 | `POST` | `/api/v1/projects/:projectId/tasks` |
 | `GET` | `/api/v1/tasks/:id` |
@@ -63,6 +64,34 @@ Only projects accessible to the authenticated user are returned. Archived projec
 | `DELETE` | `/api/v1/tasks/:id` |
 
 Task writes are rejected for archived projects. Task access is enforced through project membership/ownership rules.
+
+The project task board endpoint returns all accessible project tasks grouped by status for Kanban rendering. It uses the standard success envelope and returns fixed `todo`, `in-progress`, and `done` columns:
+
+```json
+{
+  "columns": [
+    {
+      "status": "todo",
+      "label": "To do",
+      "tasks": [],
+      "count": 0
+    },
+    {
+      "status": "in-progress",
+      "label": "In progress",
+      "tasks": [],
+      "count": 0
+    },
+    {
+      "status": "done",
+      "label": "Done",
+      "tasks": [],
+      "count": 0
+    }
+  ],
+  "totalDocs": 0
+}
+```
 
 ## Success Envelope
 

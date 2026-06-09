@@ -11,6 +11,16 @@ const TASK_POPULATE = [
   { path: 'assignee', select: 'name email role' },
   { path: 'createdBy', select: 'name email role' }
 ];
+const TASK_BOARD_COLUMNS = [
+  { status: 'todo', label: 'To do' },
+  { status: 'in-progress', label: 'In progress' },
+  { status: 'done', label: 'Done' }
+];
+const PRIORITY_RANK = {
+  high: 3,
+  medium: 2,
+  low: 1
+};
 
 const parseDateOrThrow = (dateValue, fieldLabel) => {
   if (typeof dateValue === 'undefined' || dateValue === null || dateValue === '') {
@@ -123,6 +133,30 @@ const buildBaseTaskFilter = (projectId) => {
   };
 };
 
+const sortTasksForBoard = (tasks, sortBy) => {
+  return [...tasks].sort((firstTask, secondTask) => {
+    if (sortBy === 'priority') {
+      const priorityDiff = (PRIORITY_RANK[secondTask.priority] || 0) - (PRIORITY_RANK[firstTask.priority] || 0);
+
+      if (priorityDiff !== 0) {
+        return priorityDiff;
+      }
+    }
+
+    if (sortBy === 'dueDate' || sortBy === 'priority') {
+      const firstDueDate = firstTask.dueDate ? new Date(firstTask.dueDate).getTime() : Number.MAX_SAFE_INTEGER;
+      const secondDueDate = secondTask.dueDate ? new Date(secondTask.dueDate).getTime() : Number.MAX_SAFE_INTEGER;
+      const dueDateDiff = firstDueDate - secondDueDate;
+
+      if (dueDateDiff !== 0) {
+        return dueDateDiff;
+      }
+    }
+
+    return new Date(secondTask.createdAt).getTime() - new Date(firstTask.createdAt).getTime();
+  });
+};
+
 const createProjectTask = async (projectId, userId, data) => {
   const project = await projectService.getAccessibleProjectById(projectId, userId);
   projectService.ensureProjectIsWritable(project, 'create tasks');
@@ -218,6 +252,36 @@ const getTasksByProject = async (projectId, userId, queryParams) => {
   return paginate(query, queryParams.page, queryParams.limit);
 };
 
+const getProjectTaskBoard = async (projectId, userId, queryParams) => {
+  const project = await projectService.getAccessibleProjectById(projectId, userId);
+  const filter = buildBaseTaskFilter(project._id);
+
+  if (queryParams.priority) {
+    if (!['low', 'medium', 'high'].includes(queryParams.priority)) {
+      throw ApiError.badRequest('Task priority must be low, medium, or high.');
+    }
+
+    filter.priority = queryParams.priority;
+  }
+
+  const tasks = await Task.find(filter).populate(TASK_POPULATE);
+  const sortedTasks = sortTasksForBoard(tasks, queryParams.sortBy);
+  const columns = TASK_BOARD_COLUMNS.map((column) => {
+    const columnTasks = sortedTasks.filter((task) => task.status === column.status);
+
+    return {
+      ...column,
+      tasks: columnTasks,
+      count: columnTasks.length
+    };
+  });
+
+  return {
+    columns,
+    totalDocs: sortedTasks.length
+  };
+};
+
 const getTaskById = async (taskId, userId) => {
   const task = await getTaskByIdWithRelations(taskId);
   const projectId = task.project._id ? task.project._id.toString() : task.project.toString();
@@ -275,6 +339,7 @@ const deleteTask = async (taskId, userId) => {
 module.exports = {
   createProjectTask,
   getTasksByProject,
+  getProjectTaskBoard,
   getTaskById,
   updateTask,
   deleteTask

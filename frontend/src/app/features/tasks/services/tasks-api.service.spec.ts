@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { ApiClient } from '../../../core/api/api-client.service';
-import { Task, TasksPage } from '../models/task.models';
+import { Task, TaskBoard, TasksPage } from '../models/task.models';
 import { TasksApiService } from './tasks-api.service';
 
 const task: Task = {
@@ -32,6 +32,14 @@ const tasksPage: TasksPage = {
   currentPage: 1,
   hasNextPage: false,
   hasPrevPage: false,
+};
+const taskBoard: TaskBoard = {
+  columns: [
+    { status: 'todo', label: 'To do', tasks: [task], count: 1 },
+    { status: 'in-progress', label: 'In progress', tasks: [], count: 0 },
+    { status: 'done', label: 'Done', tasks: [], count: 0 },
+  ],
+  totalDocs: 1,
 };
 
 describe('TasksApiService', () => {
@@ -67,6 +75,24 @@ describe('TasksApiService', () => {
 
     expect(apiClient.get).toHaveBeenCalledWith('/projects/project-1/tasks', {
       params: { page: 2, limit: 25, status: 'done', priority: 'high', sortBy: 'priority' },
+    });
+  });
+
+  it('requests project task board without all/default filters', () => {
+    apiClient.get.and.returnValue(of(taskBoard));
+
+    service.getProjectTaskBoard('project-1', { priority: 'all', sortBy: 'newest' }).subscribe();
+
+    expect(apiClient.get).toHaveBeenCalledWith('/projects/project-1/tasks/board', { params: {} });
+  });
+
+  it('requests filtered and sorted project task board', () => {
+    apiClient.get.and.returnValue(of(taskBoard));
+
+    service.getProjectTaskBoard('project-1', { priority: 'high', sortBy: 'priority' }).subscribe();
+
+    expect(apiClient.get).toHaveBeenCalledWith('/projects/project-1/tasks/board', {
+      params: { priority: 'high', sortBy: 'priority' },
     });
   });
 

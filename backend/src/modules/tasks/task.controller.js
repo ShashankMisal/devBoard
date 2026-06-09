@@ -15,6 +15,13 @@ const getTasksByProject = async (req, res) => {
   res.status(response.statusCode).json(response);
 };
 
+const getProjectTaskBoard = async (req, res) => {
+  const taskBoard = await taskService.getProjectTaskBoard(req.params.projectId, req.user._id, req.query);
+  const response = new ApiResponse(200, 'Task board fetched successfully.', taskBoard);
+
+  res.status(response.statusCode).json(response);
+};
+
 const getTaskById = async (req, res) => {
   const task = await taskService.getTaskById(req.params.id, req.user._id);
   const response = new ApiResponse(200, 'Task fetched successfully.', task);
@@ -39,6 +46,7 @@ const deleteTask = async (req, res) => {
 module.exports = {
   createProjectTask,
   getTasksByProject,
+  getProjectTaskBoard,
   getTaskById,
   updateTask,
   deleteTask

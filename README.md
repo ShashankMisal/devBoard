@@ -22,7 +22,7 @@ devBoard/
 ## Applications
 
 - `backend/`: Express, MongoDB, Mongoose, Redis, JWT, Swagger, Jest/Supertest, Winston/Morgan, and Docker.
-- `frontend/`: Angular 19 standalone app with Angular Material/CDK, SCSS, strict TypeScript/templates, signals-first state services, dark/light themes, and Karma/Jasmine tests.
+- `frontend/`: Angular 19 standalone app with Angular Material/CDK, SCSS, strict TypeScript/templates, signals-first state services, project Kanban board, dark/light themes, and Karma/Jasmine tests.
 
 ## Backend Commands
 
@@ -84,6 +84,8 @@ The frontend dev server runs on `http://localhost:4200` and proxies `/api` to th
 - Swagger UI: [http://localhost:5001/api/v1/docs](http://localhost:5001/api/v1/docs).
 
 The frontend integration contract is documented in [docs/backend-api-contract.md](docs/backend-api-contract.md). Swagger under `/api/v1/docs` remains the live route and payload reference.
+
+The project task board endpoint is `GET /api/v1/projects/:projectId/tasks/board`; status moves use the existing `PUT /api/v1/tasks/:id` endpoint.
 
 ## Frontend Delivery
 

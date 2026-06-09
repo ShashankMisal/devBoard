@@ -68,6 +68,17 @@ Components stay presentation-focused. API access belongs in feature/core service
 - Refresh tokens remain backend-managed through an `httpOnly` cookie.
 - The auth interceptor attaches bearer tokens, refreshes on eligible `401` responses, retries the original request once, and clears the session if refresh fails.
 - Backend validation errors are normalized and mapped to form-level or field-level UI errors.
+- Project Kanban uses `GET /api/v1/projects/:projectId/tasks/board` for grouped task board data and `PUT /api/v1/tasks/:id` for drag-to-status updates.
+
+## Task Board
+
+Project detail pages use a Kanban board as the default task view. The board has fixed `To do`, `In progress`, and `Done` columns backed by backend task status values.
+
+- Dragging a task to another column immediately updates local board state and persists through the existing task update endpoint.
+- Failed drag updates roll back the local board state and show an error notification.
+- Archived projects remain readable but disable task creation, editing, deletion, and drag moves.
+- Users can switch to the paginated list view with the board/list toggle.
+- Task create, detail, edit, and delete flows continue to use the task side panel.
 
 ## Theme System
 
@@ -85,6 +96,8 @@ npm run test:coverage
 ```
 
 Coverage reporting is available, but hard coverage gates are intentionally deferred until the project raises the baseline. The current suite covers API clients, auth/session flows, guards, interceptors, state services, forms, dialogs, lists, and shared utilities.
+
+Kanban coverage includes the board API service, task board state, board rendering, empty columns, and optimistic move rollback behavior.
 
 E2E happy-path tests are deferred and should be added later with a dedicated browser test stack.
 

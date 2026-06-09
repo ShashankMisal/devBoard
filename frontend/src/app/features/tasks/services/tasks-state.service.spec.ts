@@ -6,7 +6,7 @@ import { AppApiError } from '../../../core/api/api.models';
 import { User } from '../../../core/auth/auth.models';
 import { SessionService } from '../../../core/auth/session.service';
 import { Project } from '../../projects/models/project.models';
-import { Task, TasksPage } from '../models/task.models';
+import { Task, TaskBoard, TasksPage } from '../models/task.models';
 import { TasksApiService } from './tasks-api.service';
 import { TasksStateService } from './tasks-state.service';
 
@@ -59,6 +59,14 @@ const tasksPage: TasksPage = {
   hasNextPage: false,
   hasPrevPage: false,
 };
+const taskBoard: TaskBoard = {
+  columns: [
+    { status: 'todo', label: 'To do', tasks: [task], count: 1 },
+    { status: 'in-progress', label: 'In progress', tasks: [], count: 0 },
+    { status: 'done', label: 'Done', tasks: [], count: 0 },
+  ],
+  totalDocs: 1,
+};
 
 describe('TasksStateService', () => {
   let tasksApi: jasmine.SpyObj<TasksApiService>;
@@ -68,6 +76,7 @@ describe('TasksStateService', () => {
   beforeEach(() => {
     tasksApi = jasmine.createSpyObj<TasksApiService>('TasksApiService', [
       'getProjectTasks',
+      'getProjectTaskBoard',
       'createProjectTask',
       'getTask',
       'updateTask',
@@ -118,6 +127,32 @@ describe('TasksStateService', () => {
     expect(service.isListLoading()).toBeFalse();
   });
 
+  it('normalizes query params and stores loaded task board', () => {
+    tasksApi.getProjectTaskBoard.and.returnValue(of(taskBoard));
+
+    service.loadProjectTaskBoard('project-1', {
+      priority: 'high',
+      sortBy: 'priority',
+    });
+
+    expect(tasksApi.getProjectTaskBoard).toHaveBeenCalledWith('project-1', {
+      priority: 'high',
+      sortBy: 'priority',
+    });
+    expect(service.taskBoard()).toEqual(taskBoard);
+    expect(service.isBoardLoading()).toBeFalse();
+  });
+
+  it('stores board errors from the API', () => {
+    const error: AppApiError = { message: 'Board failed.', kind: 'server', fields: {} };
+    tasksApi.getProjectTaskBoard.and.returnValue(throwError(() => error));
+
+    service.loadProjectTaskBoard('project-1');
+
+    expect(service.boardError()).toBe('Board failed.');
+    expect(service.isBoardLoading()).toBeFalse();
+  });
+
   it('replaces and removes tasks after writes', () => {
     const updatedTask: Task = { ...task, status: 'done', updatedAt: '2026-01-02T00:00:00.000Z' };
     tasksApi.getProjectTasks.and.returnValue(of(tasksPage));
@@ -131,6 +166,26 @@ describe('TasksStateService', () => {
     service.deleteTask(task._id).subscribe();
     expect(service.tasks()).toEqual([]);
     expect(service.tasksPage()?.totalDocs).toBe(0);
+  });
+
+  it('optimistically moves tasks across board columns and reverts on failure', () => {
+    const updatedTask: Task = { ...task, status: 'done', updatedAt: '2026-01-02T00:00:00.000Z' };
+    const error: AppApiError = { message: 'Move failed.', kind: 'server', fields: {} };
+    tasksApi.getProjectTasks.and.returnValue(of(tasksPage));
+    tasksApi.getProjectTaskBoard.and.returnValue(of(taskBoard));
+    tasksApi.updateTask.and.returnValues(
+      of(updatedTask),
+      throwError(() => error),
+    );
+    service.loadProjectTasks('project-1');
+    service.loadProjectTaskBoard('project-1');
+
+    service.moveTask(project, task, 'done').subscribe();
+    expect(service.taskBoard()?.columns.find((column) => column.status === 'done')?.tasks).toEqual([updatedTask]);
+
+    service.moveTask(project, updatedTask, 'in-progress').subscribe({ error: () => undefined });
+    expect(service.taskBoard()?.columns.find((column) => column.status === 'done')?.tasks).toEqual([updatedTask]);
+    expect(service.taskBoard()?.columns.find((column) => column.status === 'in-progress')?.tasks).toEqual([]);
   });
 
   it('derives task permissions from project state and current user', () => {

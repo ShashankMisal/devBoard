@@ -6,7 +6,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { of } from 'rxjs';
 
 import { NotificationService } from '../../../core/services/notification.service';
-import { Task, TasksPage } from '../../tasks/models/task.models';
+import { Task, TaskBoard, TasksPage } from '../../tasks/models/task.models';
 import { TasksStateService } from '../../tasks/services/tasks-state.service';
 import { Project } from '../models/project.models';
 import { ProjectsStateService } from '../services/projects-state.service';
@@ -51,6 +51,14 @@ const tasksPage: TasksPage = {
   hasNextPage: false,
   hasPrevPage: false,
 };
+const taskBoard: TaskBoard = {
+  columns: [
+    { status: 'todo', label: 'To do', tasks: [task], count: 1 },
+    { status: 'in-progress', label: 'In progress', tasks: [], count: 0 },
+    { status: 'done', label: 'Done', tasks: [], count: 0 },
+  ],
+  totalDocs: 1,
+};
 
 describe('ProjectDetailPageComponent', () => {
   it('hides owner-only actions for non-owners and archived projects', async () => {
@@ -69,13 +77,19 @@ describe('ProjectDetailPageComponent', () => {
     const tasksState = {
       selectedTask: signal<Task | null>(null),
       tasksPage: signal<TasksPage | null>(tasksPage),
+      taskBoard: signal<TaskBoard | null>(taskBoard),
       tasks: signal<Task[]>([task]),
       query: signal({ page: 1, limit: 10, status: 'all', priority: 'all', sortBy: 'newest' }),
+      boardQuery: signal({ priority: 'all', sortBy: 'newest' }),
       listError: signal(''),
+      boardError: signal(''),
       isListLoading: signal(false),
+      isBoardLoading: signal(false),
       loadProjectTasks: jasmine.createSpy('loadProjectTasks'),
+      loadProjectTaskBoard: jasmine.createSpy('loadProjectTaskBoard'),
       clearSelectedTask: jasmine.createSpy('clearSelectedTask'),
       loadTask: jasmine.createSpy('loadTask'),
+      moveTask: jasmine.createSpy('moveTask'),
       canCreate: jasmine.createSpy('canCreate').and.returnValue(false),
       canUpdate: jasmine.createSpy('canUpdate').and.returnValue(false),
       canDelete: jasmine.createSpy('canDelete').and.returnValue(false),

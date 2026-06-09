@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,7 +18,16 @@ import { NotificationService } from '../../../core/services/notification.service
 import { SkeletonListComponent } from '../../../shared/ui/skeleton-list/skeleton-list.component';
 import { UiStateComponent } from '../../../shared/ui/ui-state/ui-state.component';
 import { applyApiFieldErrors, getControlError } from '../../../shared/utils/form-errors';
-import { Task, TaskPanelMode, TaskPriorityFilter, TaskSort, TaskStatusFilter } from '../../tasks/models/task.models';
+import {
+  Task,
+  TaskBoardQuery,
+  TaskPanelMode,
+  TaskPriorityFilter,
+  TaskSort,
+  TaskStatusFilter,
+  TaskViewMode,
+} from '../../tasks/models/task.models';
+import { TaskBoardComponent, TaskBoardMoveEvent } from '../../tasks/task-board/task-board.component';
 import { TasksStateService } from '../../tasks/services/tasks-state.service';
 import { TaskPanelComponent } from '../../tasks/task-panel/task-panel.component';
 import { Project, ProjectStatus } from '../models/project.models';
@@ -153,12 +163,14 @@ export class ConfirmTaskDeleteDialogComponent {
   imports: [
     DatePipe,
     MatButtonModule,
+    MatButtonToggleModule,
     MatChipsModule,
     MatFormFieldModule,
     MatPaginatorModule,
     MatSelectModule,
     RouterLink,
     SkeletonListComponent,
+    TaskBoardComponent,
     TaskPanelComponent,
     UiStateComponent,
   ],
@@ -176,6 +188,7 @@ export class ProjectDetailPageComponent {
   readonly tasksState = inject(TasksStateService);
   readonly isStatusSubmitting = signal(false);
   readonly taskPanelMode = signal<TaskPanelMode | null>(null);
+  readonly taskView = signal<TaskViewMode>('board');
   readonly statusOptions: { value: TaskStatusFilter; label: string }[] = [
     { value: 'all', label: 'All statuses' },
     { value: 'todo', label: 'To do' },
@@ -216,6 +229,11 @@ export class ProjectDetailPageComponent {
             page: Number(queryParams.get('taskPage') ?? 1),
             limit: Number(queryParams.get('taskLimit') ?? 10),
             status: taskStatus === 'todo' || taskStatus === 'in-progress' || taskStatus === 'done' ? taskStatus : 'all',
+            priority:
+              taskPriority === 'low' || taskPriority === 'medium' || taskPriority === 'high' ? taskPriority : 'all',
+            sortBy: taskSortBy === 'dueDate' || taskSortBy === 'priority' ? taskSortBy : 'newest',
+          });
+          this.tasksState.loadProjectTaskBoard(projectId, {
             priority:
               taskPriority === 'low' || taskPriority === 'medium' || taskPriority === 'high' ? taskPriority : 'all',
             sortBy: taskSortBy === 'dueDate' || taskSortBy === 'priority' ? taskSortBy : 'newest',
@@ -270,6 +288,10 @@ export class ProjectDetailPageComponent {
     });
   }
 
+  changeTaskView(view: TaskViewMode): void {
+    this.taskView.set(view);
+  }
+
   openCreateTaskPanel(): void {
     this.tasksState.clearSelectedTask();
     this.taskPanelMode.set('create');
@@ -295,9 +317,23 @@ export class ProjectDetailPageComponent {
 
     if (project) {
       this.tasksState.loadProjectTasks(project._id, this.tasksState.query());
+      this.tasksState.loadProjectTaskBoard(project._id, this.boardQueryFromListQuery());
     }
 
     this.taskPanelMode.set('detail');
+  }
+
+  moveTask(event: TaskBoardMoveEvent): void {
+    const project = this.projectsState.selectedProject();
+
+    this.tasksState.moveTask(project, event.task, event.status).subscribe({
+      next: () => {
+        this.notificationService.success(`Task moved to ${this.taskStatusLabel(event.status)}.`);
+      },
+      error: (error: AppApiError) => {
+        this.notificationService.error(error.message);
+      },
+    });
   }
 
   confirmTaskDelete(task: Task): void {
@@ -372,6 +408,7 @@ export class ProjectDetailPageComponent {
         const project = this.projectsState.selectedProject();
         if (project) {
           this.tasksState.loadProjectTasks(project._id, this.tasksState.query());
+          this.tasksState.loadProjectTaskBoard(project._id, this.boardQueryFromListQuery());
         }
       },
       error: (error: AppApiError) => {
@@ -386,5 +423,14 @@ export class ProjectDetailPageComponent {
       queryParams,
       queryParamsHandling: 'merge',
     });
+  }
+
+  private boardQueryFromListQuery(): TaskBoardQuery {
+    const query = this.tasksState.query();
+
+    return {
+      priority: query.priority,
+      sortBy: query.sortBy,
+    };
   }
 }

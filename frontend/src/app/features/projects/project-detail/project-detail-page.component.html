@@ -115,26 +115,37 @@
           <div class="project-detail-page__tasks-header">
             <div>
               <h2>Tasks</h2>
-              @if (tasksState.tasksPage(); as page) {
-                <p>{{ page.totalDocs }} task{{ page.totalDocs === 1 ? '' : 's' }}</p>
+              @if (tasksState.taskBoard(); as board) {
+                <p>{{ board.totalDocs }} task{{ board.totalDocs === 1 ? '' : 's' }}</p>
               } @else {
                 <p>Project-scoped task execution.</p>
               }
             </div>
+            <mat-button-toggle-group
+              class="project-detail-page__task-view-toggle"
+              [value]="taskView()"
+              aria-label="Task view"
+              (valueChange)="changeTaskView($event)"
+            >
+              <mat-button-toggle value="board">Board</mat-button-toggle>
+              <mat-button-toggle value="list">List</mat-button-toggle>
+            </mat-button-toggle-group>
             @if (tasksState.canCreate(project)) {
               <button mat-flat-button type="button" (click)="openCreateTaskPanel()">New task</button>
             }
           </div>
 
           <div class="project-detail-page__task-toolbar">
-            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Status</mat-label>
-              <mat-select [value]="tasksState.query().status" (valueChange)="changeTaskStatus($event)">
-                @for (option of statusOptions; track option.value) {
-                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+            @if (taskView() === 'list') {
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Status</mat-label>
+                <mat-select [value]="tasksState.query().status" (valueChange)="changeTaskStatus($event)">
+                  @for (option of statusOptions; track option.value) {
+                    <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            }
 
             <mat-form-field appearance="outline" subscriptSizing="dynamic">
               <mat-label>Priority</mat-label>
@@ -155,7 +166,38 @@
             </mat-form-field>
           </div>
 
-          @if (tasksState.listError()) {
+          @if (taskView() === 'board') {
+            @if (tasksState.boardError()) {
+              <app-ui-state
+                title="Task board could not load"
+                [message]="tasksState.boardError()"
+                actionLabel="Try again"
+                variant="error"
+                (action)="tasksState.loadProjectTaskBoard(project._id, tasksState.boardQuery())"
+              />
+            } @else if (tasksState.isBoardLoading() && !tasksState.taskBoard()) {
+              <app-ui-state title="Loading task board" message="Fetching project Kanban columns." variant="loading" />
+              <app-skeleton-list [rows]="3" />
+            } @else {
+              @if (tasksState.taskBoard(); as board) {
+                @if (board.totalDocs === 0) {
+                  <app-ui-state
+                    title="No tasks found"
+                    message="Create a task or adjust the filters to review project work."
+                  />
+                } @else {
+                  <app-task-board
+                    [project]="project"
+                    [board]="board"
+                    (taskOpened)="openTaskPanel($event)"
+                    (editRequested)="openTaskPanel($event, 'edit')"
+                    (deleteRequested)="confirmTaskDelete($event)"
+                    (taskMoved)="moveTask($event)"
+                  />
+                }
+              }
+            }
+          } @else if (tasksState.listError()) {
             <app-ui-state
               title="Tasks could not load"
               [message]="tasksState.listError()"

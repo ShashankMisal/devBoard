@@ -207,6 +207,28 @@ const openApiSpec = {
           hasPrevPage: { type: 'boolean', example: false }
         }
       },
+      TaskBoardColumn: {
+        type: 'object',
+        properties: {
+          status: { type: 'string', enum: ['todo', 'in-progress', 'done'], example: 'todo' },
+          label: { type: 'string', example: 'To do' },
+          tasks: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/Task' }
+          },
+          count: { type: 'integer', example: 3 }
+        }
+      },
+      TaskBoard: {
+        type: 'object',
+        properties: {
+          columns: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/TaskBoardColumn' }
+          },
+          totalDocs: { type: 'integer', example: 8 }
+        }
+      },
       DashboardSummary: {
         type: 'object',
         properties: {
@@ -717,6 +739,32 @@ const openApiSpec = {
           400: buildSuccessResponse('Validation error', errorResponseSchema),
           403: buildSuccessResponse('Forbidden', errorResponseSchema),
           404: buildSuccessResponse('Member not found', errorResponseSchema)
+        }
+      }
+    },
+    '/api/v1/projects/{projectId}/tasks/board': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get project task board columns',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { in: 'path', name: 'projectId', required: true, schema: { type: 'string' } },
+          { in: 'query', name: 'priority', schema: { type: 'string', enum: ['low', 'medium', 'high'] } },
+          { in: 'query', name: 'sortBy', schema: { type: 'string', enum: ['priority', 'dueDate'] } }
+        ],
+        responses: {
+          200: buildSuccessResponse('Task board fetched successfully', {
+            allOf: [
+              { $ref: '#/components/schemas/ApiResponse' },
+              {
+                properties: {
+                  data: { $ref: '#/components/schemas/TaskBoard' }
+                }
+              }
+            ]
+          }),
+          400: buildSuccessResponse('Validation error', errorResponseSchema),
+          403: buildSuccessResponse('Forbidden', errorResponseSchema)
         }
       }
     },

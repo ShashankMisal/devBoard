@@ -172,6 +172,12 @@
   gap: var(--space-3);
 }
 
+.project-detail-page__task-view-toggle {
+  --mat-standard-button-toggle-height: 3.2rem;
+
+  flex: 0 0 auto;
+}
+
 .project-detail-page__task-list {
   display: grid;
   gap: var(--space-3);
