@@ -35,7 +35,10 @@
     <app-ui-state title="Loading projects" message="Fetching your accessible project workspace." variant="loading" />
     <app-skeleton-list [rows]="4" />
   } @else if (projectsState.projects().length === 0) {
-    <app-ui-state title="No projects found" message="Create a project or adjust the status filter to see archived work." />
+    <app-ui-state
+      title="No projects found"
+      message="Create a project or adjust the status filter to see archived work."
+    />
     <a mat-flat-button class="projects-page__state-action" routerLink="/projects/new">Create project</a>
   } @else {
     <div class="projects-page__grid" aria-label="Project list">
@@ -46,7 +49,9 @@
           }
           <mat-card-header>
             <mat-card-title>{{ project.title }}</mat-card-title>
-            <mat-card-subtitle>{{ ownershipLabel(project.owner._id) }} &middot; {{ project.owner.name }}</mat-card-subtitle>
+            <mat-card-subtitle
+              >{{ ownershipLabel(project.owner._id) }} &middot; {{ project.owner.name }}</mat-card-subtitle
+            >
           </mat-card-header>
           <mat-card-content>
             <div class="projects-page__badges" aria-label="Project metadata">

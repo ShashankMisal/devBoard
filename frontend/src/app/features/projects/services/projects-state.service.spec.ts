@@ -110,7 +110,10 @@ describe('ProjectsStateService', () => {
   it('updates selected and listed project after member changes', () => {
     const updatedProject: Project = {
       ...project,
-      members: [...project.members, { _id: 'member-2', name: 'Second Member', email: 'second@example.com', role: 'user' }],
+      members: [
+        ...project.members,
+        { _id: 'member-2', name: 'Second Member', email: 'second@example.com', role: 'user' },
+      ],
     };
     projectsApi.getProjects.and.returnValue(of(projectsPage));
     projectsApi.addMember.and.returnValue(of(updatedProject));

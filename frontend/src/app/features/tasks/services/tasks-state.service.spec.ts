@@ -89,7 +89,13 @@ describe('TasksStateService', () => {
   it('normalizes query params and stores loaded tasks', () => {
     tasksApi.getProjectTasks.and.returnValue(of(tasksPage));
 
-    service.loadProjectTasks('project-1', { page: 0, limit: 100, status: 'done', priority: 'high', sortBy: 'priority' });
+    service.loadProjectTasks('project-1', {
+      page: 0,
+      limit: 100,
+      status: 'done',
+      priority: 'high',
+      sortBy: 'priority',
+    });
 
     expect(tasksApi.getProjectTasks).toHaveBeenCalledWith('project-1', {
       page: 1,

@@ -1,4 +1,8 @@
-<section class="ui-state" [class.ui-state--error]="variant === 'error'" [attr.aria-live]="variant === 'error' ? 'assertive' : 'polite'">
+<section
+  class="ui-state"
+  [class.ui-state--error]="variant === 'error'"
+  [attr.aria-live]="variant === 'error' ? 'assertive' : 'polite'"
+>
   <span class="ui-state__marker" aria-hidden="true"></span>
   <h2 class="ui-state__title">{{ title }}</h2>
   @if (message) {

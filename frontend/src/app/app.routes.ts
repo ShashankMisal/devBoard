@@ -30,7 +30,9 @@ export const routes: Routes = [
         path: 'register',
         canActivate: [guestGuard],
         loadComponent: () =>
-          import('./features/auth/register/register-page.component').then((component) => component.RegisterPageComponent),
+          import('./features/auth/register/register-page.component').then(
+            (component) => component.RegisterPageComponent,
+          ),
       },
       {
         path: 'profile',
@@ -46,7 +48,8 @@ export const routes: Routes = [
       {
         path: 'tasks',
         canActivate: [authGuard],
-        loadComponent: () => import('./features/tasks/tasks-page.component').then((component) => component.TasksPageComponent),
+        loadComponent: () =>
+          import('./features/tasks/tasks-page.component').then((component) => component.TasksPageComponent),
       },
     ],
   },

@@ -12,7 +12,15 @@ import { DashboardStateService } from './services/dashboard-state.service';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [DatePipe, MatButtonModule, MatCardModule, MatChipsModule, RouterLink, SkeletonListComponent, UiStateComponent],
+  imports: [
+    DatePipe,
+    MatButtonModule,
+    MatCardModule,
+    MatChipsModule,
+    RouterLink,
+    SkeletonListComponent,
+    UiStateComponent,
+  ],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

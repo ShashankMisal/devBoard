@@ -14,7 +14,10 @@ describe('AppComponent', () => {
         provideRouter([]),
         provideHttpClient(),
         provideNoopAnimations(),
-        { provide: SessionService, useValue: { bootstrap: jasmine.createSpy('bootstrap'), isBootstrapping: signal(false) } },
+        {
+          provide: SessionService,
+          useValue: { bootstrap: jasmine.createSpy('bootstrap'), isBootstrapping: signal(false) },
+        },
       ],
     }).compileComponents();
   });

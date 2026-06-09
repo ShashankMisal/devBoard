@@ -35,7 +35,9 @@ describe('ProjectFormPageComponent', () => {
   };
 
   function createRouter(): jasmine.SpyObj<Router> {
-    const router = jasmine.createSpyObj<Router>('Router', ['navigate', 'createUrlTree', 'serializeUrl'], { events: of() });
+    const router = jasmine.createSpyObj<Router>('Router', ['navigate', 'createUrlTree', 'serializeUrl'], {
+      events: of(),
+    });
     router.createUrlTree.and.returnValue({} as ReturnType<Router['createUrlTree']>);
     router.serializeUrl.and.returnValue('/');
 
@@ -62,7 +64,10 @@ describe('ProjectFormPageComponent', () => {
         { provide: ProjectsStateService, useValue: state },
         { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({})) } },
         { provide: Router, useValue: createRouter() },
-        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'info']) },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'info']),
+        },
       ],
     }).compileComponents();
 

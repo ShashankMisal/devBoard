@@ -3,7 +3,9 @@
     <p class="project-form-page__eyebrow">Projects</p>
     <h1 class="project-form-page__title">{{ isEditMode() ? 'Edit project' : 'Create project' }}</h1>
     <p class="project-form-page__description">
-      {{ isEditMode() ? 'Update project details while it remains active.' : 'Create a workspace for a team initiative.' }}
+      {{
+        isEditMode() ? 'Update project details while it remains active.' : 'Create a workspace for a team initiative.'
+      }}
     </p>
   </header>
 
@@ -23,7 +25,9 @@
       }
 
       @if (isEditMode() && projectsState.isReadOnly(projectsState.selectedProject())) {
-        <p class="project-form-page__notice">Archived projects are read-only. Unarchive the project from its detail page to edit it.</p>
+        <p class="project-form-page__notice">
+          Archived projects are read-only. Unarchive the project from its detail page to edit it.
+        </p>
       }
 
       <mat-form-field appearance="outline">
@@ -48,7 +52,11 @@
         <button
           mat-flat-button
           type="submit"
-          [disabled]="isSubmitting() || projectsState.isDetailLoading() || (isEditMode() && !projectsState.canEdit(projectsState.selectedProject()))"
+          [disabled]="
+            isSubmitting() ||
+            projectsState.isDetailLoading() ||
+            (isEditMode() && !projectsState.canEdit(projectsState.selectedProject()))
+          "
         >
           {{ isEditMode() ? 'Save project' : 'Create project' }}
         </button>

@@ -2,7 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { ApiClient } from '../api/api-client.service';
-import { AuthPayload, LoginRequest, RefreshTokenPayload, RegisterRequest, UpdateProfileRequest, User } from './auth.models';
+import {
+  AuthPayload,
+  LoginRequest,
+  RefreshTokenPayload,
+  RegisterRequest,
+  UpdateProfileRequest,
+  User,
+} from './auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {

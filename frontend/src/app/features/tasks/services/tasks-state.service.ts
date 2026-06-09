@@ -124,9 +124,9 @@ export class TasksStateService {
 
     return Boolean(
       project?.status === 'active' &&
-        task &&
-        currentUserId &&
-        (project.owner._id === currentUserId || task.assignee?._id === currentUserId),
+      task &&
+      currentUserId &&
+      (project.owner._id === currentUserId || task.assignee?._id === currentUserId),
     );
   }
 
@@ -135,9 +135,9 @@ export class TasksStateService {
 
     return Boolean(
       project?.status === 'active' &&
-        task &&
-        currentUserId &&
-        (project.owner._id === currentUserId || task.createdBy._id === currentUserId),
+      task &&
+      currentUserId &&
+      (project.owner._id === currentUserId || task.createdBy._id === currentUserId),
     );
   }
 

@@ -12,7 +12,15 @@ import { TaskPanelComponent } from './task-panel.component';
 
 type TaskStateStub = Pick<
   TasksStateService,
-  'detailError' | 'isDetailLoading' | 'canCreate' | 'canUpdate' | 'canDelete' | 'createProjectTask' | 'updateTask' | 'statusLabel' | 'priorityLabel'
+  | 'detailError'
+  | 'isDetailLoading'
+  | 'canCreate'
+  | 'canUpdate'
+  | 'canDelete'
+  | 'createProjectTask'
+  | 'updateTask'
+  | 'statusLabel'
+  | 'priorityLabel'
 >;
 
 const project: Project = {
@@ -60,7 +68,9 @@ describe('TaskPanelComponent', () => {
       createProjectTask: jasmine.createSpy('createProjectTask').and.returnValue(of(task)),
       updateTask: jasmine.createSpy('updateTask').and.returnValue(of(task)),
       statusLabel: jasmine.createSpy('statusLabel').and.callFake((status) => (status === 'todo' ? 'To do' : status)),
-      priorityLabel: jasmine.createSpy('priorityLabel').and.callFake((priority) => priority.charAt(0).toUpperCase() + priority.slice(1)),
+      priorityLabel: jasmine
+        .createSpy('priorityLabel')
+        .and.callFake((priority) => priority.charAt(0).toUpperCase() + priority.slice(1)),
     };
 
     await TestBed.configureTestingModule({
@@ -68,7 +78,10 @@ describe('TaskPanelComponent', () => {
       providers: [
         provideNoopAnimations(),
         { provide: TasksStateService, useValue: state },
-        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'info']) },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'info']),
+        },
       ],
     }).compileComponents();
 

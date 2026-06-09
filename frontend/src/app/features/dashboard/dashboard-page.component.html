@@ -67,7 +67,10 @@
           </div>
 
           @if (summary.recentProjects.length === 0) {
-            <app-ui-state title="No projects yet" message="Create your first project to start organizing DevBoard work." />
+            <app-ui-state
+              title="No projects yet"
+              message="Create your first project to start organizing DevBoard work."
+            />
           } @else {
             <div class="dashboard-page__list">
               @for (project of summary.recentProjects; track project._id) {
@@ -78,7 +81,12 @@
                   </div>
                   <div class="dashboard-page__item-meta">
                     <mat-chip>{{ project.status === 'active' ? 'Active' : 'Archived' }}</mat-chip>
-                    <a mat-button [routerLink]="['/projects', project._id]" [attr.aria-label]="'Open project ' + project.title">Open</a>
+                    <a
+                      mat-button
+                      [routerLink]="['/projects', project._id]"
+                      [attr.aria-label]="'Open project ' + project.title"
+                      >Open</a
+                    >
                   </div>
                 </article>
               }
@@ -95,7 +103,10 @@
           </div>
 
           @if (summary.upcomingAssignedTasks.length === 0) {
-            <app-ui-state title="No upcoming assigned tasks" message="Assigned tasks with future due dates will appear here." />
+            <app-ui-state
+              title="No upcoming assigned tasks"
+              message="Assigned tasks with future due dates will appear here."
+            />
           } @else {
             <div class="dashboard-page__list">
               @for (task of summary.upcomingAssignedTasks; track task._id) {
@@ -111,7 +122,11 @@
                   <div class="dashboard-page__item-meta">
                     <mat-chip>{{ taskStatusLabel(task.status) }}</mat-chip>
                     <mat-chip>{{ taskPriorityLabel(task.priority) }}</mat-chip>
-                    <a mat-button [routerLink]="['/projects', task.project._id]" [attr.aria-label]="'Open project for task ' + task.title">
+                    <a
+                      mat-button
+                      [routerLink]="['/projects', task.project._id]"
+                      [attr.aria-label]="'Open project for task ' + task.title"
+                    >
                       Open
                     </a>
                   </div>

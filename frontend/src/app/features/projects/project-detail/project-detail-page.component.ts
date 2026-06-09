@@ -196,29 +196,32 @@ export class ProjectDetailPageComponent {
   private loadedProjectId = '';
 
   constructor() {
-    combineLatest([this.route.paramMap, this.route.queryParamMap]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(([params, queryParams]) => {
-      const projectId = params.get('id');
+    combineLatest([this.route.paramMap, this.route.queryParamMap])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([params, queryParams]) => {
+        const projectId = params.get('id');
 
-      if (projectId) {
-        if (this.loadedProjectId !== projectId) {
-          this.loadedProjectId = projectId;
-          this.projectsState.loadProject(projectId);
-          this.closeTaskPanel();
+        if (projectId) {
+          if (this.loadedProjectId !== projectId) {
+            this.loadedProjectId = projectId;
+            this.projectsState.loadProject(projectId);
+            this.closeTaskPanel();
+          }
+
+          const taskStatus = queryParams.get('taskStatus');
+          const taskPriority = queryParams.get('taskPriority');
+          const taskSortBy = queryParams.get('taskSortBy');
+
+          this.tasksState.loadProjectTasks(projectId, {
+            page: Number(queryParams.get('taskPage') ?? 1),
+            limit: Number(queryParams.get('taskLimit') ?? 10),
+            status: taskStatus === 'todo' || taskStatus === 'in-progress' || taskStatus === 'done' ? taskStatus : 'all',
+            priority:
+              taskPriority === 'low' || taskPriority === 'medium' || taskPriority === 'high' ? taskPriority : 'all',
+            sortBy: taskSortBy === 'dueDate' || taskSortBy === 'priority' ? taskSortBy : 'newest',
+          });
         }
-
-        const taskStatus = queryParams.get('taskStatus');
-        const taskPriority = queryParams.get('taskPriority');
-        const taskSortBy = queryParams.get('taskSortBy');
-
-        this.tasksState.loadProjectTasks(projectId, {
-          page: Number(queryParams.get('taskPage') ?? 1),
-          limit: Number(queryParams.get('taskLimit') ?? 10),
-          status: taskStatus === 'todo' || taskStatus === 'in-progress' || taskStatus === 'done' ? taskStatus : 'all',
-          priority: taskPriority === 'low' || taskPriority === 'medium' || taskPriority === 'high' ? taskPriority : 'all',
-          sortBy: taskSortBy === 'dueDate' || taskSortBy === 'priority' ? taskSortBy : 'newest',
-        });
-      }
-    });
+      });
   }
 
   openAddMemberDialog(): void {
@@ -226,11 +229,14 @@ export class ProjectDetailPageComponent {
       width: 'min(460px, calc(100vw - 32px))',
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((updatedProject) => {
-      if (updatedProject) {
-        this.notificationService.success('Project member added successfully.');
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((updatedProject) => {
+        if (updatedProject) {
+          this.notificationService.success('Project member added successfully.');
+        }
+      });
   }
 
   confirmArchive(project: Project): void {
@@ -299,11 +305,14 @@ export class ProjectDetailPageComponent {
       width: 'min(420px, calc(100vw - 32px))',
     });
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((confirmed) => {
-      if (confirmed) {
-        this.deleteTask(task);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.deleteTask(task);
+        }
+      });
   }
 
   taskStatusLabel(status: Task['status']): string {
@@ -329,11 +338,14 @@ export class ProjectDetailPageComponent {
     );
     component.actionLabel.set(archive ? 'Archive' : 'Unarchive');
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((confirmed) => {
-      if (confirmed) {
-        this.setProjectStatus(project, archive ? 'archived' : 'active');
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.setProjectStatus(project, archive ? 'archived' : 'active');
+        }
+      });
   }
 
   private setProjectStatus(project: Project, status: 'active' | 'archived'): void {

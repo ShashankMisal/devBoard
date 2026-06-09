@@ -21,35 +21,36 @@ export class ApiClient {
   private readonly baseUrl = inject(API_BASE_URL);
 
   get<T>(path: string, options?: ApiRequestOptions): Observable<T> {
-    return this.http
-      .get<ApiResponse<T>>(this.toUrl(path), this.toHttpOptions(options))
-      .pipe(
-        retry({
-          count: 2,
-          delay: (error, retryCount) =>
-            isRetryableGetFailure(error) ? timer(retryCount * 250) : throwError(() => error),
-        }),
-        map((response) => response.data),
-        catchError((error) => throwError(() => normalizeApiError(error))),
-      );
+    return this.http.get<ApiResponse<T>>(this.toUrl(path), this.toHttpOptions(options)).pipe(
+      retry({
+        count: 2,
+        delay: (error, retryCount) =>
+          isRetryableGetFailure(error) ? timer(retryCount * 250) : throwError(() => error),
+      }),
+      map((response) => response.data),
+      catchError((error) => throwError(() => normalizeApiError(error))),
+    );
   }
 
   post<T, Body = unknown>(path: string, body: Body, options?: ApiRequestOptions): Observable<T> {
-    return this.http
-      .post<ApiResponse<T>>(this.toUrl(path), body, this.toHttpOptions(options))
-      .pipe(map((response) => response.data), catchError((error) => throwError(() => normalizeApiError(error))));
+    return this.http.post<ApiResponse<T>>(this.toUrl(path), body, this.toHttpOptions(options)).pipe(
+      map((response) => response.data),
+      catchError((error) => throwError(() => normalizeApiError(error))),
+    );
   }
 
   put<T, Body = unknown>(path: string, body: Body, options?: ApiRequestOptions): Observable<T> {
-    return this.http
-      .put<ApiResponse<T>>(this.toUrl(path), body, this.toHttpOptions(options))
-      .pipe(map((response) => response.data), catchError((error) => throwError(() => normalizeApiError(error))));
+    return this.http.put<ApiResponse<T>>(this.toUrl(path), body, this.toHttpOptions(options)).pipe(
+      map((response) => response.data),
+      catchError((error) => throwError(() => normalizeApiError(error))),
+    );
   }
 
   delete<T>(path: string, options?: ApiRequestOptions): Observable<T> {
-    return this.http
-      .delete<ApiResponse<T>>(this.toUrl(path), this.toHttpOptions(options))
-      .pipe(map((response) => response.data), catchError((error) => throwError(() => normalizeApiError(error))));
+    return this.http.delete<ApiResponse<T>>(this.toUrl(path), this.toHttpOptions(options)).pipe(
+      map((response) => response.data),
+      catchError((error) => throwError(() => normalizeApiError(error))),
+    );
   }
 
   private toUrl(path: string): string {
@@ -61,7 +62,8 @@ export class ApiClient {
 
   private toHttpOptions(options?: ApiRequestOptions): { params?: HttpParams; withCredentials: boolean } {
     return {
-      params: options?.params instanceof HttpParams ? options.params : new HttpParams({ fromObject: options?.params ?? {} }),
+      params:
+        options?.params instanceof HttpParams ? options.params : new HttpParams({ fromObject: options?.params ?? {} }),
       withCredentials: options?.withCredentials ?? true,
     };
   }

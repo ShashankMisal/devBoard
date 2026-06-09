@@ -45,7 +45,9 @@ describe('ProjectsPageComponent', () => {
   };
 
   function createRouter(): jasmine.SpyObj<Router> {
-    const router = jasmine.createSpyObj<Router>('Router', ['navigate', 'createUrlTree', 'serializeUrl'], { events: of() });
+    const router = jasmine.createSpyObj<Router>('Router', ['navigate', 'createUrlTree', 'serializeUrl'], {
+      events: of(),
+    });
     router.createUrlTree.and.returnValue({} as ReturnType<Router['createUrlTree']>);
     router.serializeUrl.and.returnValue('/');
 
@@ -61,7 +63,9 @@ describe('ProjectsPageComponent', () => {
       isListLoading: signal(false),
       listError: signal(''),
       loadProjects: jasmine.createSpy('loadProjects'),
-      canEdit: jasmine.createSpy('canEdit').and.callFake((item: Project) => item.owner._id === 'owner-1' && item.status === 'active'),
+      canEdit: jasmine
+        .createSpy('canEdit')
+        .and.callFake((item: Project) => item.owner._id === 'owner-1' && item.status === 'active'),
       isOwner: jasmine.createSpy('isOwner').and.callFake((item: Project) => item.owner._id === 'owner-1'),
     };
 

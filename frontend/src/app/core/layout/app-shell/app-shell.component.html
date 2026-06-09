@@ -59,7 +59,9 @@
 
       <div class="app-shell__session-actions" aria-label="Session controls">
         @if (isAuthenticated()) {
-          <a mat-button routerLink="/profile" routerLinkActive="app-shell__nav-link--active">{{ user()?.name || 'Profile' }}</a>
+          <a mat-button routerLink="/profile" routerLinkActive="app-shell__nav-link--active">{{
+            user()?.name || 'Profile'
+          }}</a>
           <button mat-button type="button" (click)="confirmLogout()">Logout</button>
         } @else {
           <a mat-button routerLink="/login" routerLinkActive="app-shell__nav-link--active">Login</a>

@@ -1,5 +1,15 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -139,7 +149,9 @@ export class TaskPanelComponent implements OnChanges {
 
     request.pipe(finalize(() => this.isSubmitting.set(false))).subscribe({
       next: (savedTask) => {
-        this.notificationService.success(this.mode === 'create' ? 'Task created successfully.' : 'Task updated successfully.');
+        this.notificationService.success(
+          this.mode === 'create' ? 'Task created successfully.' : 'Task updated successfully.',
+        );
         this.saved.emit(savedTask);
       },
       error: (error: AppApiError) => {

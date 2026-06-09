@@ -98,7 +98,10 @@ describe('ProjectDetailPageComponent', () => {
             queryParamMap: of(convertToParamMap({})),
           },
         },
-        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'info']) },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['success', 'error', 'info']),
+        },
       ],
     }).compileComponents();
 

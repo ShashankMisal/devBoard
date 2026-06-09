@@ -51,7 +51,9 @@ describe('TasksApiService', () => {
   it('requests project tasks without all/default filters', () => {
     apiClient.get.and.returnValue(of(tasksPage));
 
-    service.getProjectTasks('project-1', { page: 1, limit: 10, status: 'all', priority: 'all', sortBy: 'newest' }).subscribe();
+    service
+      .getProjectTasks('project-1', { page: 1, limit: 10, status: 'all', priority: 'all', sortBy: 'newest' })
+      .subscribe();
 
     expect(apiClient.get).toHaveBeenCalledWith('/projects/project-1/tasks', { params: { page: 1, limit: 10 } });
   });
@@ -59,7 +61,9 @@ describe('TasksApiService', () => {
   it('requests filtered and sorted project tasks', () => {
     apiClient.get.and.returnValue(of(tasksPage));
 
-    service.getProjectTasks('project-1', { page: 2, limit: 25, status: 'done', priority: 'high', sortBy: 'priority' }).subscribe();
+    service
+      .getProjectTasks('project-1', { page: 2, limit: 25, status: 'done', priority: 'high', sortBy: 'priority' })
+      .subscribe();
 
     expect(apiClient.get).toHaveBeenCalledWith('/projects/project-1/tasks', {
       params: { page: 2, limit: 25, status: 'done', priority: 'high', sortBy: 'priority' },

@@ -83,9 +83,9 @@ export class ProjectsStateService {
   }
 
   updateProject(projectId: string, payload: UpdateProjectRequest): Observable<Project> {
-    return this.projectsApi.updateProject(projectId, this.trimUpdatePayload(payload)).pipe(
-      tap((project) => this.replaceProject(project)),
-    );
+    return this.projectsApi
+      .updateProject(projectId, this.trimUpdatePayload(payload))
+      .pipe(tap((project) => this.replaceProject(project)));
   }
 
   setProjectStatus(project: Project, status: ProjectStatus): Observable<Project> {
@@ -93,9 +93,9 @@ export class ProjectsStateService {
   }
 
   addMember(projectId: string, payload: AddProjectMemberRequest): Observable<Project> {
-    return this.projectsApi.addMember(projectId, { email: payload.email.trim().toLowerCase() }).pipe(
-      tap((project) => this.replaceProject(project)),
-    );
+    return this.projectsApi
+      .addMember(projectId, { email: payload.email.trim().toLowerCase() })
+      .pipe(tap((project) => this.replaceProject(project)));
   }
 
   clearSelectedProject(): void {
