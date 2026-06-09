@@ -164,6 +164,9 @@
 
 .project-detail-page__tasks {
   gap: var(--space-5);
+  padding-inline: 0;
+  border-color: transparent;
+  background: transparent;
 }
 
 .project-detail-page__task-toolbar {

@@ -34,20 +34,22 @@
               </span>
             </button>
 
-            <div class="task-board__card-badges">
-              <mat-chip>{{ tasksState.priorityLabel(task.priority) }}</mat-chip>
-              @if (!tasksState.canUpdate(project, task)) {
-                <mat-chip>Locked</mat-chip>
-              }
-            </div>
+            <div class="task-board__card-footer">
+              <div class="task-board__card-badges">
+                <mat-chip>{{ tasksState.priorityLabel(task.priority) }}</mat-chip>
+                @if (!tasksState.canUpdate(project, task)) {
+                  <mat-chip>Locked</mat-chip>
+                }
+              </div>
 
-            <div class="task-board__card-actions">
-              @if (tasksState.canUpdate(project, task)) {
-                <button mat-button type="button" (click)="editRequested.emit(task)">Edit</button>
-              }
-              @if (tasksState.canDelete(project, task)) {
-                <button mat-button color="warn" type="button" (click)="deleteRequested.emit(task)">Delete</button>
-              }
+              <div class="task-board__card-actions">
+                @if (tasksState.canUpdate(project, task)) {
+                  <button mat-button type="button" (click)="editRequested.emit(task)">Edit</button>
+                }
+                @if (tasksState.canDelete(project, task)) {
+                  <button mat-button color="warn" type="button" (click)="deleteRequested.emit(task)">Delete</button>
+                }
+              </div>
             </div>
           </article>
         }
